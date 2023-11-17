@@ -1,16 +1,17 @@
 package com.example.demo.pay.presentation;
 
+import com.example.demo.pay.Pay;
 import com.example.demo.pay.application.PayService;
 import com.example.demo.pay.dto.PayRequest;
 import com.example.demo.pay.dto.PayResult;
 import com.example.demo.pay.dto.PayServiceResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class PayApiController {
@@ -22,6 +23,12 @@ public class PayApiController {
         PayServiceResponse response = payService.save(payRequest);
 
         return ResponseEntity.ok(new PayResult<PayServiceResponse>(HttpStatus.OK.value(), "결제 생성 완료", response));
+    }
+
+    @GetMapping("/test/pay")
+    public void testPay(@RequestParam int totalAmount) {
+        Pay pay = new Pay(totalAmount);
+        log.info("tx amount {} vat amount {}", pay.getTotalAmount(), pay.getVatAmount());
     }
 
 

@@ -7,8 +7,7 @@ public class PayResult<T> {
 
     private final int status;
     private final String message;
-
-    private T response;
+    private final T response;
 
     public PayResult(int status, String message, T response) {
         this.status = status;

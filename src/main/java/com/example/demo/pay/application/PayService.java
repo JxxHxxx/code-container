@@ -19,7 +19,7 @@ public class PayService {
         Pay pay = new Pay(payRequest.getAmount());
         Pay savedPay = payRepository.save(pay);
 
-        return new PayServiceResponse(savedPay.getAmount(), pay.getSenderId(), pay.getReceiverId());
+        return new PayServiceResponse(savedPay.getTotalAmount(), pay.getSenderId(), pay.getReceiverId());
     }
 
 }

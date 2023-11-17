@@ -1,7 +1,7 @@
 package com.example.demo.pay.batch;
 
 
-import com.example.demo.sales.DailySaleForm;
+import com.example.demo.sales.dto.DailySaleForm;
 import com.example.demo.pay.Pay;
 import com.example.demo.pay.infra.PayRepository;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class CountSalesJob {
                 .build();
     }
 
-    @Bean(name = "count-sales.step1")
+    @Bean(name = "count.sales.step1")
     public Step step1() {
         return stepBuilderFactory.get("count-sales-step1")
                 .tasklet(someTasklet())
@@ -62,7 +62,7 @@ public class CountSalesJob {
 
     private int sumPayAmount(List<Pay> paysOfOneReceiver) {
         int sales = paysOfOneReceiver.stream()
-                .mapToInt(Pay::getAmount)
+                .mapToInt(Pay::getTotalAmount)
                 .sum();
         return sales;
     }

@@ -1,5 +1,6 @@
 package com.example.demo.pay;
 
+import com.example.demo.pay.application.VatCalculator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -14,12 +15,19 @@ public class Pay {
 
     @Id @GeneratedValue
     private Long id;
-    private Integer amount;
+    private Integer totalAmount;
+    private Integer vatAmount;
     private String senderId;
     private String receiverId;
 
-    public Pay(Integer amount) {
-        this.amount = amount;
+//    public Pay(Integer totalAmount) {
+//        this.senderId = UUID.randomUUID().toString();
+//        this.receiverId = IdentifyProvider.generate(10);
+//    }
+
+    public Pay(Integer totalAmount) {
+        this.vatAmount = VatCalculator.execute(totalAmount);
+        this.totalAmount = totalAmount;
         this.senderId = UUID.randomUUID().toString();
         this.receiverId = IdentifyProvider.generate(10);
     }
