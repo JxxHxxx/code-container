@@ -24,12 +24,4 @@ public class PayApiController {
 
         return ResponseEntity.ok(new PayResult<PayServiceResponse>(HttpStatus.OK.value(), "결제 생성 완료", response));
     }
-
-    @GetMapping("/test/pay")
-    public void testPay(@RequestParam int totalAmount) {
-        Pay pay = new Pay(totalAmount);
-        log.info("tx amount {} vat amount {}", pay.getTotalAmount(), pay.getVatAmount());
-    }
-
-
 }

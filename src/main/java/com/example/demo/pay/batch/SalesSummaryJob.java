@@ -22,23 +22,23 @@ import java.util.List;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class CountSalesJob {
+public class SalesSummaryJob {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final PayRepository payRepository;
 
-    @Bean(name = "count.sales.job")
+    @Bean(name = "sales.summary.job")
     public Job job1() {
-        return jobBuilderFactory.get("count-sales-job")
+        return jobBuilderFactory.get("sales-summary-job")
                 .start(step1())
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
-    @Bean(name = "count.sales.step1")
+    @Bean(name = "sales.summary.step1")
     public Step step1() {
-        return stepBuilderFactory.get("count-sales-step1")
+        return stepBuilderFactory.get("summary-summary-step1")
                 .tasklet(someTasklet())
                 .build();
     }

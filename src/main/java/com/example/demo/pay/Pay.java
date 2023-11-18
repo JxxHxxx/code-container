@@ -20,11 +20,6 @@ public class Pay {
     private String senderId;
     private String receiverId;
 
-//    public Pay(Integer totalAmount) {
-//        this.senderId = UUID.randomUUID().toString();
-//        this.receiverId = IdentifyProvider.generate(10);
-//    }
-
     public Pay(Integer totalAmount) {
         this.vatAmount = VatCalculator.execute(totalAmount);
         this.totalAmount = totalAmount;

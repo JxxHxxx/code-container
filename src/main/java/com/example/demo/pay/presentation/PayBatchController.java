@@ -21,9 +21,9 @@ public class PayBatchController {
     private final JobExplorer jobExplorer;
     private final ApplicationContext context;
 
-    @PostMapping("/batch/count-sales")
+    @PostMapping("/batch/run")
     public ExitStatus runJob(@RequestBody JobLauncherRequest request) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        Job job = context.getBean("count.sales.job", Job.class);
+        Job job = context.getBean(request.getJobName(), Job.class);
         JobParameters jobParameters = new JobParametersBuilder(request.getJobParameters(), jobExplorer)
                 .getNextJobParameters(job)
                 .toJobParameters();

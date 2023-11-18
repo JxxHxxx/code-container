@@ -21,5 +21,4 @@ public class PayService {
 
         return new PayServiceResponse(savedPay.getTotalAmount(), pay.getSenderId(), pay.getReceiverId());
     }
-
 }
