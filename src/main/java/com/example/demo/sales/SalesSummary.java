@@ -17,14 +17,16 @@ public class SalesSummary {
     private Long id;
 
     private String storeId;
-    private Integer amount;
+    private Integer dailyTotalSales;
+    private Integer dailyVatDeductedSales;
     private LocalDate createDate;
-    private String createBy;
+    private String createSystem;
 
-    public SalesSummary(String storeId, Integer amount, String createBy) {
+    public SalesSummary(String storeId, Integer dailyTotalSales, Integer dailyVatDeductedSales, String createSystem) {
         this.storeId = storeId;
-        this.amount = amount;
-        this.createBy = createBy;
+        this.dailyTotalSales = dailyTotalSales;
+        this.dailyVatDeductedSales = dailyVatDeductedSales;
+        this.createSystem = createSystem;
         this.createDate = LocalDate.now();
     }
 }

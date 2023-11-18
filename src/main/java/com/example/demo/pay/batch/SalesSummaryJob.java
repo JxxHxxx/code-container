@@ -1,7 +1,8 @@
 package com.example.demo.pay.batch;
 
 
-import com.example.demo.sales.dto.DailySaleForm;
+import com.example.demo.sales.application.SalesSummaryService;
+import com.example.demo.sales.dto.SalesSummaryForm;
 import com.example.demo.pay.Pay;
 import com.example.demo.pay.infra.PayRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,9 @@ public class SalesSummaryJob {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final PayRepository payRepository;
+    private final SalesSummaryService salesSummaryService;
+
+    private static final String CREATE_SYSTEM = "BATCH";
 
     @Bean(name = "sales.summary.job")
     public Job job1() {
@@ -38,32 +42,40 @@ public class SalesSummaryJob {
 
     @Bean(name = "sales.summary.step1")
     public Step step1() {
-        return stepBuilderFactory.get("summary-summary-step1")
-                .tasklet(someTasklet())
+        return stepBuilderFactory.get("sales-summary-step1")
+                .tasklet(makeDailySalesSummary())
                 .build();
     }
 
     @Bean
-    public Tasklet someTasklet() {
+    public Tasklet makeDailySalesSummary() {
         return (contribution, chunkContext) -> {
             List<String> receivers = payRepository.findAllReceiver();
 
+            List<SalesSummaryForm> salesSummary = new ArrayList<>();
+
             receivers.forEach(receiver -> {
                 List<Pay> paysOfOneReceiver = payRepository.findByReceiverId(receiver);
-                int sales = sumPayAmount(paysOfOneReceiver);
-                log.info("receiver : {} sales : {}",receiver, sales);
-            });
+                int dailyTotalSales = calculateDailyTotalSales(paysOfOneReceiver);
+                int dailyVatDeductedSales = calculateDailyVatDeductedSales(paysOfOneReceiver);
 
-            List<DailySaleForm> dailySales = new ArrayList<>();
+                salesSummary.add(new SalesSummaryForm(receiver, dailyTotalSales, dailyVatDeductedSales, CREATE_SYSTEM));
+            });
+            salesSummaryService.saveAll(salesSummary);
 
             return RepeatStatus.FINISHED;
         };
     }
 
-    private int sumPayAmount(List<Pay> paysOfOneReceiver) {
-        int sales = paysOfOneReceiver.stream()
+    private int calculateDailyTotalSales(List<Pay> paysOfOneReceiver) {
+        return paysOfOneReceiver.stream()
                 .mapToInt(Pay::getTotalAmount)
                 .sum();
-        return sales;
+    }
+
+    private int calculateDailyVatDeductedSales(List<Pay> paysOfOneReceiver) {
+        return paysOfOneReceiver.stream()
+                .mapToInt(pay -> pay.getTotalAmount() - pay.getVatAmount())
+                .sum();
     }
 }

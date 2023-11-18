@@ -1,6 +1,5 @@
 package com.example.demo.pay.presentation;
 
-import com.example.demo.pay.Pay;
 import com.example.demo.pay.application.PayService;
 import com.example.demo.pay.dto.PayRequest;
 import com.example.demo.pay.dto.PayResult;
