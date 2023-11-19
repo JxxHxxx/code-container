@@ -5,9 +5,9 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class PayRequest {
+public class PayForm {
     private Integer amount;
-    public PayRequest(Integer amount) {
+    public PayForm(Integer amount) {
         this.amount = amount;
     }
 }

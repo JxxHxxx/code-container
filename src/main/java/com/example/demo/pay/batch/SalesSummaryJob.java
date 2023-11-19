@@ -12,12 +12,16 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -50,21 +54,39 @@ public class SalesSummaryJob {
     @Bean
     public Tasklet makeDailySalesSummary() {
         return (contribution, chunkContext) -> {
-            List<String> receivers = payRepository.findAllReceiver();
+            List<SalesSummaryForm> salesSummary = new ArrayList<>(); // salesSummary 를 담을 공간
 
-            List<SalesSummaryForm> salesSummary = new ArrayList<>();
+            List<String> storeIds = payRepository.findAllStore();
+            String requestDate = getRequestDate(chunkContext);
+            storeIds.forEach(storeId -> {
+                List<Pay> oneStorePays = payRepository.findOneDayPays(storeId, requestDate);
+                int dailyTotalSales = calculateDailyTotalSales(oneStorePays);
+                int dailyVatDeductedSales = calculateDailyVatDeductedSales(oneStorePays);
 
-            receivers.forEach(receiver -> {
-                List<Pay> paysOfOneReceiver = payRepository.findByReceiverId(receiver);
-                int dailyTotalSales = calculateDailyTotalSales(paysOfOneReceiver);
-                int dailyVatDeductedSales = calculateDailyVatDeductedSales(paysOfOneReceiver);
+                salesSummary.add(new SalesSummaryForm(
+                        storeId,
+                        dailyTotalSales,
+                        dailyVatDeductedSales,
+                        toLocalDate(requestDate),
+                        CREATE_SYSTEM));
 
-                salesSummary.add(new SalesSummaryForm(receiver, dailyTotalSales, dailyVatDeductedSales, CREATE_SYSTEM));
+                log.info("{}");
             });
             salesSummaryService.saveAll(salesSummary);
+            log.info("sales.summary.job request date : {}", requestDate);
+            log.info("sales.summary.job BATCH RESULT : SUCCESS ");
 
             return RepeatStatus.FINISHED;
         };
+    }
+
+    private String getRequestDate(ChunkContext chunkContext) {
+        return String.valueOf(chunkContext.getStepContext().getJobParameters().get("requestDate"));
+    }
+
+    private LocalDate toLocalDate(String localDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(localDate, formatter);
     }
 
     private int calculateDailyTotalSales(List<Pay> paysOfOneReceiver) {

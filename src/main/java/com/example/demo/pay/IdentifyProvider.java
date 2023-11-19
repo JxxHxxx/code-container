@@ -6,8 +6,7 @@ import java.util.Random;
 
 @Slf4j
 public class IdentifyProvider {
-    public static String generate(int range) {
-        int id = new Random().nextInt(10);
-        return String.valueOf(id);
+    public static String generateStringId(int range) {
+        return String.valueOf(new Random().nextInt(range));
     }
 }
