@@ -30,7 +30,6 @@ public class MessageConfiguration {
     public JpaExecutor jpaExecutor() {
         JpaExecutor executor = new JpaExecutor(entityManagerFactory);
         // executor 설정 필요
-//        executor.setJpaQuery("SELECT m FROM QMessage m where m.id = 4");
         executor.setJpaQuery("SELECT m FROM QMessage m ");
         return executor;
     }
