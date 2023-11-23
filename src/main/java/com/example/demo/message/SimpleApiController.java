@@ -19,7 +19,7 @@ public class SimpleApiController {
 
     @PostMapping("/queue")
     public String sendMessage() {
-        Requester requester = new Requester(UUID.randomUUID().toString().substring(0, 6), LocalDateTime.now());
+        Requester requester = new Requester(UUID.randomUUID().toString().substring(0, 6));
         QMessage qMessage = new QMessage(1l, TaskType.I, requester);
         provider.sendMessage(qMessage);
         return "Q 생성 완료";

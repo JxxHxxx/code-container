@@ -2,6 +2,7 @@ package com.example.demo.message.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -17,9 +18,16 @@ public class Requester {
     @Column(name = "request_time")
     private LocalDateTime requestTime;
 
-    public Requester(String id, LocalDateTime requestTime) {
+    public Requester(String id) {
         this.id = id;
-        this.requestTime = requestTime;
+        this.requestTime = LocalDateTime.now();
     }
 
+    @Override
+    public String toString() {
+        return "Requester{" +
+                "id='" + id + '\'' +
+                ", requestTime=" + requestTime +
+                '}';
+    }
 }
