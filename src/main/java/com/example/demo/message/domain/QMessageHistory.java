@@ -23,7 +23,6 @@ public class QMessageHistory {
     private Requester requester;
     private LocalDateTime executeTime;
 
-    @Builder
     public QMessageHistory(Long QMessageId, TaskType taskType, MessageStatus messageStatus, Requester requester) {
         this.QMessageId = QMessageId;
         this.taskType = taskType;
@@ -31,4 +30,13 @@ public class QMessageHistory {
         this.requester = requester;
         this.executeTime = LocalDateTime.now();
     }
+
+    public String requesterId() {
+        return this.requester.getId();
+    }
+
+    public LocalDateTime requestTime() {
+        return this.requester.getRequestTime();
+    }
+
 }

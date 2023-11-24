@@ -1,8 +1,8 @@
 package com.example.demo.message;
 
-import com.example.demo.message.domain.QMessage;
-import com.example.demo.message.domain.QMessageHistory;
-import com.example.demo.message.infra.QMessageHistoryRepository;
+import com.example.demo.message.domain.*;
+import com.example.demo.message.domain.processor.PaymentMessageProcessor;
+import com.example.demo.message.domain.processor.StoreMessageProcessor;
 import com.example.demo.message.infra.QMessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,51 +12,41 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.demo.message.domain.QMessageHistory.*;
+import static com.example.demo.message.domain.ReceiverType.*;
 
 @Slf4j
 @MessageEndpoint
 @RequiredArgsConstructor
 public class SingleConsumer {
     private final QMessageRepository qMessageRepository;
-    private final QMessageHistoryRepository qMessageHistoryRepository;
-
-//    @ServiceActivator(inputChannel = "messageChannel")
-//    public void handleMessage(List<QMessage> messages) throws InterruptedException {
-//        log.info("=======================================");
-//        messages.forEach(message -> log.info("Received message : {}", message));
-//        log.info("=======================================");
-//        Thread.sleep(500);
-//    }
+    private final PaymentMessageProcessor paymentMessageProcessor;
+    private final StoreMessageProcessor storeMessageProcessor;
 
     @Transactional
     @ServiceActivator(inputChannel = "messageChannel")
     public void handleMessage(List<QMessage> messages) throws InterruptedException {
         messages.forEach(qMessage -> {
-            log.info("=====================================");
-            someBusinessLogic(qMessage);
+            log.info("=================START====================");
+            log.info("Message info : {}", qMessage);
 
-            createQMessageHistory(qMessage);
-            qMessageRepository.delete(qMessage);
-            qMessageRepository.flush();
-            log.info("=====================================");
+            TaskResult taskResult = null;
+            // 수신자 : 결제 서버
+            if (qMessage.receiverType(PAYMENT)) {
+                taskResult = paymentMessageProcessor.execute(qMessage);
+            }
+            // 수신자 : 가게주
+            if (qMessage.receiverType(STORE)) {
+                taskResult = storeMessageProcessor.execute(qMessage);
+            }
+
+            if (TaskResult.FINISHED.equals(taskResult)) {
+                qMessageRepository.delete(qMessage);
+                qMessageRepository.flush();
+            }
+
+            log.info("================= END ====================");
         });
 
         Thread.sleep(50);
-    }
-
-    private void createQMessageHistory(QMessage qMessage) {
-        QMessageHistory qMessageHistory = builder()
-                .QMessageId(qMessage.getMessageId())
-                .messageStatus(qMessage.getMessageStatus())
-                .requester(qMessage.getRequester())
-                .taskType(qMessage.getTaskType())
-                .build();
-
-        qMessageHistoryRepository.saveAndFlush(qMessageHistory);
-    }
-
-    private static void someBusinessLogic(QMessage qMessage) {
-        log.info("{}", qMessage);
     }
 }

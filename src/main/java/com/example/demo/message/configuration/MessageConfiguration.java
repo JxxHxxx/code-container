@@ -35,7 +35,7 @@ public class MessageConfiguration {
     }
 
     /** Provider 역할
-     *  send to messageChannel
+     *  send to messageChannel without going through provider
      */
     @Bean
     @InboundChannelAdapter(channel = "messageChannel", poller = @Poller(fixedDelay = "${poller.interval}"))

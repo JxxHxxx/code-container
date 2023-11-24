@@ -19,13 +19,32 @@ public class QMessage {
     private MessageStatus messageStatus;
     @Embedded
     private Requester requester;
+    @Enumerated(EnumType.STRING)
+    private ReceiverType receiverType;
 
-    public QMessage(long messageId, TaskType taskType, Requester requester) {
-        log.info("CALLED QMessage CONSTRUCTOR");
-        this.messageId = messageId;
+    public QMessage(TaskType taskType, MessageStatus messageStatus, Requester requester, ReceiverType receiverType) {
+        this.taskType = taskType;
+        this.messageStatus = messageStatus;
+        this.requester = requester;
+        this.receiverType = receiverType;
+    }
+
+    public QMessage(TaskType taskType, Requester requester, ReceiverType receiverType) {
         this.taskType = taskType;
         this.requester = requester;
-        this.messageStatus = MessageStatus.SENT;
+        this.receiverType = receiverType;
+    }
+
+    public void changeMessageStatus(MessageStatus messageStatus) {
+        this.messageStatus = messageStatus;
+    }
+
+    public boolean messageStatus(MessageStatus messageStatus) {
+        return this.messageStatus.equals(messageStatus);
+    }
+
+    public boolean receiverType(ReceiverType receiverType) {
+        return this.receiverType.equals(receiverType);
     }
 
     @Override
@@ -35,6 +54,7 @@ public class QMessage {
                 ", taskType=" + taskType +
                 ", messageStatus=" + messageStatus +
                 ", requester=" + requester +
+                ", receiverType=" + receiverType +
                 '}';
     }
 }

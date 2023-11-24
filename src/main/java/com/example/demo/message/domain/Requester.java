@@ -1,5 +1,6 @@
 package com.example.demo.message.domain;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -8,7 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.time.LocalDateTime;
 
-@Getter @NoArgsConstructor
+@Getter(value = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @Embeddable
 public class Requester {
 
