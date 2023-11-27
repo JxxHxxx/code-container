@@ -23,7 +23,7 @@ public class SingleConsumer {
     private final StoreMessageProcessor storeMessageProcessor;
 
     @Transactional
-    @ServiceActivator(inputChannel = "messageChannel")
+//    @ServiceActivator(inputChannel = "messageChannel")
     public void handleMessage(List<QMessage> messages) throws InterruptedException {
         messages.forEach(qMessage -> {
             log.info("=================START====================");

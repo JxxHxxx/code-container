@@ -2,7 +2,9 @@ package com.example.demo.pay.presentation;
 
 import com.example.demo.pay.dto.JobLauncherRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.explore.JobExplorer;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class PayBatchController {
@@ -23,6 +26,7 @@ public class PayBatchController {
 
     @PostMapping("/batch/run")
     public ExitStatus runJob(@RequestBody JobLauncherRequest request) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
+        log.info("START {}", request.getJobName());
         Job job = context.getBean(request.getJobName(), Job.class);
         JobParameters jobParameters = new JobParametersBuilder(request.getJobParameters(), jobExplorer)
                 .getNextJobParameters(job)
@@ -31,3 +35,4 @@ public class PayBatchController {
         return jobLauncher.run(job, jobParameters).getExitStatus();
     }
 }
+

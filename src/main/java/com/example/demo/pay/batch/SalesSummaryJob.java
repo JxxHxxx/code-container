@@ -59,7 +59,7 @@ public class SalesSummaryJob {
             List<String> storeIds = payRepository.findAllStore();
             String requestDate = getRequestDate(chunkContext);
             storeIds.forEach(storeId -> {
-                List<Pay> oneStorePays = payRepository.findOneDayPays(storeId, requestDate);
+                List<Pay> oneStorePays = payRepository.findOneDayPaysN(storeId, requestDate);
                 int dailyTotalSales = calculateDailyTotalSales(oneStorePays);
                 int dailyVatDeductedSales = calculateDailyVatDeductedSales(oneStorePays);
 
@@ -69,8 +69,6 @@ public class SalesSummaryJob {
                         dailyVatDeductedSales,
                         toLocalDate(requestDate),
                         CREATE_SYSTEM));
-
-                log.info("{}");
             });
             salesSummaryService.saveAll(salesSummary);
             log.info("sales.summary.job request date : {}", requestDate);

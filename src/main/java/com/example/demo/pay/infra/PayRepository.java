@@ -13,10 +13,18 @@ public interface PayRepository extends JpaRepository<Pay, Long> {
     @Query("select distinct p.storeId from Pay p")
     List<String> findAllStore();
 
+    int countByStoreId(String storeId);
     List<Pay> findByStoreId(String storeId);
 
+    //mysql
     @Query("select p from Pay p " +
             "where p.storeId =:storeId " +
             "and substring(p.createTime, 1,10) =:requestDate")
     List<Pay> findOneDayPays(@Param("storeId") String storeId, @Param("requestDate") String requestDate);
+
+    //mssql
+    @Query(value = "select p from Pay p " +
+            "where p.storeId =:storeId " +
+            "and CONVERT(DATE, p.createTime, 120) =:requestDate")
+    List<Pay> findOneDayPaysN(@Param("storeId") String storeId, @Param("requestDate") String requestDate);
 }

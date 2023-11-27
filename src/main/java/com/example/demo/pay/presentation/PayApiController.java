@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.Future;
 
 @Slf4j
 @RestController
@@ -26,10 +27,9 @@ public class PayApiController {
         return ResponseEntity.ok(new PayResult<PayServiceResponse>(HttpStatus.OK.value(), "결제 생성 완료", response));
     }
 
-    @PostMapping("/pays/all")
-    public String createPays(@RequestBody List<PayForm> payForms) {
-        payService.saveAll(payForms);
-
+    @PostMapping("/pays/{iteration}")
+    public String createPays(@PathVariable("iteration") int iteration) {
+        payService.saveAll(iteration);
         return "다건 생성 완료";
     }
 }
