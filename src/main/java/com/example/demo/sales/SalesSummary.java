@@ -3,10 +3,7 @@ package com.example.demo.sales;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -21,16 +18,21 @@ public class SalesSummary {
     private String storeId;
     private Integer dailyTotalSales;
     private Integer dailyVatDeductedSales;
+    private Integer dailyTotalTransaction;
     private LocalDate salesDate;
     private LocalDateTime createTime;
-    private String createSystem;
 
-    public SalesSummary(String storeId, Integer dailyTotalSales, LocalDate salesDate, Integer dailyVatDeductedSales, String createSystem) {
+    @Enumerated(EnumType.STRING)
+    private SystemType createSystem;
+
+    public SalesSummary(String storeId, Integer dailyTotalSales, Integer dailyVatDeductedSales, Integer dailyTotalTransaction,
+                        LocalDate salesDate, SystemType createSystem) {
         this.storeId = storeId;
         this.dailyTotalSales = dailyTotalSales;
         this.dailyVatDeductedSales = dailyVatDeductedSales;
+        this.dailyTotalTransaction = dailyTotalTransaction;
         this.salesDate = salesDate;
-        this.createSystem = createSystem;
         this.createTime = LocalDateTime.now();
+        this.createSystem = createSystem;
     }
 }

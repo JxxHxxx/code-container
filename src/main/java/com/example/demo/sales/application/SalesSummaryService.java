@@ -21,8 +21,9 @@ public class SalesSummaryService {
         List<SalesSummary> salesSummaries = forms.stream().map(form -> new SalesSummary(
                         form.getStoreId(),
                         form.getDailyTotalSales(),
-                        form.getSalesDate(),
                         form.getDailyVatDeductedSales(),
+                        form.getDailyTotalTransaction(),
+                        form.getSalesDate(),
                         form.getCreateSystem())
                         ).collect(Collectors.toList());
 

@@ -1,6 +1,7 @@
 package com.example.demo.pay.batch;
 
 
+import com.example.demo.sales.SystemType;
 import com.example.demo.sales.application.SalesSummaryService;
 import com.example.demo.sales.dto.SalesSummaryForm;
 import com.example.demo.pay.Pay;
@@ -34,8 +35,6 @@ public class SalesSummaryJob {
     private final PayRepository payRepository;
     private final SalesSummaryService salesSummaryService;
 
-    private static final String CREATE_SYSTEM = "BATCH";
-
     @Bean(name = "sales.summary.job")
     public Job job1() {
         return jobBuilderFactory.get("sales-summary-job")
@@ -67,8 +66,9 @@ public class SalesSummaryJob {
                         storeId,
                         dailyTotalSales,
                         dailyVatDeductedSales,
+                        null,
                         toLocalDate(requestDate),
-                        CREATE_SYSTEM));
+                        SystemType.BATCH));
             });
             salesSummaryService.saveAll(salesSummary);
             log.info("sales.summary.job request date : {}", requestDate);

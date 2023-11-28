@@ -1,22 +1,20 @@
 package com.example.demo.sales.dto;
 
+import com.example.demo.sales.SystemType;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
 
 @Getter
+@RequiredArgsConstructor
 public class SalesSummaryForm {
     private final String storeId;
     private final Integer dailyTotalSales;
     private final Integer dailyVatDeductedSales;
-    private final LocalDate salesDate;
-    private final String createSystem;
 
-    public SalesSummaryForm(String storeId, Integer dailyTotalSales, Integer dailyVatDeductedSales, LocalDate salesDate, String createSystem) {
-        this.storeId = storeId;
-        this.dailyTotalSales = dailyTotalSales;
-        this.dailyVatDeductedSales = dailyVatDeductedSales;
-        this.salesDate = salesDate;
-        this.createSystem = createSystem;
-    }
+    private final Integer dailyTotalTransaction;
+    private final LocalDate salesDate;
+    private final SystemType createSystem;
+
 }
