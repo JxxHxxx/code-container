@@ -20,10 +20,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Configuration
@@ -56,9 +55,12 @@ public class SalesSummaryJob {
             List<SalesSummaryForm> salesSummary = new ArrayList<>(); // salesSummary 를 담을 공간
 
             List<String> storeIds = payRepository.findAllStore();
-            String requestDate = getRequestDate(chunkContext);
+
+            Map<String, Object> jobParameters = chunkContext.getStepContext().getJobParameters();
+            LocalDate requestDate = LocalDate.parse(String.valueOf(jobParameters.get("requestDate")));
+
             storeIds.forEach(storeId -> {
-                List<Pay> oneStorePays = payRepository.findOneDayPaysN(storeId, requestDate);
+                List<Pay> oneStorePays = payRepository.findOneDayPays(storeId, requestDate);
                 int dailyTotalSales = calculateDailyTotalSales(oneStorePays);
                 int dailyVatDeductedSales = calculateDailyVatDeductedSales(oneStorePays);
 
@@ -66,8 +68,8 @@ public class SalesSummaryJob {
                         storeId,
                         dailyTotalSales,
                         dailyVatDeductedSales,
-                        null,
-                        toLocalDate(requestDate),
+                        oneStorePays.size(),
+                        requestDate,
                         SystemType.BATCH));
             });
             salesSummaryService.saveAll(salesSummary);
@@ -76,15 +78,6 @@ public class SalesSummaryJob {
 
             return RepeatStatus.FINISHED;
         };
-    }
-
-    private String getRequestDate(ChunkContext chunkContext) {
-        return String.valueOf(chunkContext.getStepContext().getJobParameters().get("requestDate"));
-    }
-
-    private LocalDate toLocalDate(String localDate) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        return LocalDate.parse(localDate, formatter);
     }
 
     private int calculateDailyTotalSales(List<Pay> paysOfOneReceiver) {

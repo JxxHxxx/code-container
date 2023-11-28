@@ -13,17 +13,16 @@ public class CreateTimeProvider {
     private static final int MINUTE_BOUND = 60;
     private static final int SECOND_BOUND = 60;
 
-    public static LocalDateTime provide() {
+    public static LocalDateTime createLocalDateTime() {
         return LocalDateTime.of(createLocalDate(), createLocalTime());
     }
 
-    private static LocalDate createLocalDate() {
+    public static LocalDate createLocalDate() {
         LocalDate localDate = LocalDate.now();
-        int dayToSubtract = random.nextInt(10);
+        int dayToSubtract = random.nextInt(11);
         return localDate.minusDays(dayToSubtract);
     }
-
-    private static LocalTime createLocalTime() {
+    public static LocalTime createLocalTime() {
         int hour = random.nextInt(HOUR_BOUND);
         int minute = random.nextInt(MINUTE_BOUND);
         int second = random.nextInt(SECOND_BOUND);

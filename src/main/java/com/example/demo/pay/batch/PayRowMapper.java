@@ -8,7 +8,9 @@ import org.springframework.stereotype.Component;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Component
 public class PayRowMapper implements RowMapper<Pay> {
@@ -21,13 +23,8 @@ public class PayRowMapper implements RowMapper<Pay> {
                 rs.getString("sender_id"),
                 rs.getString("store_id"),
                 PayType.valueOf(rs.getString("pay_type")),
-                convertToLocalDateTime(rs.getTimestamp("create_time")));
-    }
-
-    private LocalDateTime convertToLocalDateTime(Timestamp timestamp) {
-        if (timestamp == null) {
-            return null;
-        }
-        return timestamp.toLocalDateTime();
+                LocalDate.parse(rs.getString("created_date")),
+                LocalTime.parse(rs.getString("created_time"))
+        );
     }
 }

@@ -19,12 +19,7 @@ public interface PayRepository extends JpaRepository<Pay, Long> {
     //mysql
     @Query("select p from Pay p " +
             "where p.storeId =:storeId " +
-            "and substring(p.createTime, 1,10) =:requestDate")
-    List<Pay> findOneDayPays(@Param("storeId") String storeId, @Param("requestDate") String requestDate);
+            "and p.createdDate =:requestDate")
+    List<Pay> findOneDayPays(@Param("storeId") String storeId, @Param("requestDate") LocalDate requestDate);
 
-    //mssql
-    @Query(value = "select p from Pay p " +
-            "where p.storeId =:storeId " +
-            "and CONVERT(DATE, p.createTime, 120) =:requestDate")
-    List<Pay> findOneDayPaysN(@Param("storeId") String storeId, @Param("requestDate") String requestDate);
 }

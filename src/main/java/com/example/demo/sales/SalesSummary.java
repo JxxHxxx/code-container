@@ -35,4 +35,10 @@ public class SalesSummary {
         this.createTime = LocalDateTime.now();
         this.createSystem = createSystem;
     }
+
+    public void update(Integer totalAmount, Integer vatDeductedAmount) {
+       this.dailyTotalSales += totalAmount;
+       this.dailyVatDeductedSales += vatDeductedAmount;
+       this.dailyTotalTransaction += 1;
+    }
 }

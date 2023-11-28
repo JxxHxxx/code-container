@@ -50,7 +50,7 @@ public class PaySummaryJob {
     @Bean
     public Step paySummaryStep() throws Exception {
         return stepBuilderFactory.get("paySummaryStep")
-                .<PaySummary, PaySummary>chunk(10)
+                .<PaySummary, PaySummary>chunk(100)
                 .reader(paySummaryCursorItemReader())
                 .writer(paySummaryItemWriter())
                 .build();
@@ -58,25 +58,29 @@ public class PaySummaryJob {
 
     @Bean
     @StepScope
-    public JdbcCursorItemReader<PaySummary> paySummaryCursorItemReader() throws Exception {
+    public JdbcCursorItemReader<PaySummary> paySummaryCursorItemReader() {
         log.info("start paySummaryItemReader");
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         Object requestDate = jobParameters.get("requestDate");
+        Object storeId = jobParameters.get("storeId");
 
         return new JdbcCursorItemReaderBuilder<PaySummary>()
                 .name("paySummaryItemReader")
                 .dataSource(dataSource)
-                .sql("SELECT store_id, " +
-                        "SUM(total_amount) AS daily_total_sales, " +
-                        "SUM(vat_amount) AS daily_vat_deducted_sales, " +
-                        "COUNT(total_amount) AS daily_total_transaction " +
-                        "FROM Pay " +
-                        "WHERE CONVERT(DATE, create_time, 120) = ? " +
-                        "GROUP BY store_id")
-                // rowMapper 는 각 행(레코드)을 객체로 변환하는데 사용된다.
+                .sql(sql())
                 .rowMapper(new BeanPropertyRowMapper<>(PaySummary.class))
-                .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{requestDate}))
+                .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{storeId, requestDate}))
                 .build();
+    }
+
+    private static String sql() {
+        return "SELECT store_id, " +
+                "SUM(total_amount) AS daily_total_sales, " +
+                "SUM(vat_amount) AS daily_vat_deducted_sales, " +
+                "COUNT(total_amount) AS daily_total_transaction " +
+                "FROM Pay " +
+                "WHERE store_id = ? AND created_date = ? " +
+                "GROUP BY store_id";
     }
 
 

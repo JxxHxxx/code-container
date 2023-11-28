@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 @Slf4j
 @Service
@@ -46,7 +44,7 @@ public class PayService {
     }
 
     @Transactional
-    public Future saveAllV2(int iteration) {
+    public Future asyncSaveAll(int iteration) {
         return executorService.submit(() -> {
             log.info("currentThread {}", Thread.currentThread().getName());
             try {
