@@ -1,5 +1,6 @@
-package com.example.demo.pay.batch;
+package com.example.demo.pay.batch.job;
 
+import com.example.demo.pay.batch.dto.PaySummaryDto;
 import com.example.demo.sales.SalesSummary;
 import com.example.demo.sales.SystemType;
 import com.example.demo.sales.infra.SalesSummaryRepository;
@@ -50,7 +51,7 @@ public class PaySummaryJob {
     @Bean
     public Step paySummaryStep() throws Exception {
         return stepBuilderFactory.get("paySummaryStep")
-                .<PaySummary, PaySummary>chunk(100)
+                .<PaySummaryDto, PaySummaryDto>chunk(100)
                 .reader(paySummaryCursorItemReader())
                 .writer(paySummaryItemWriter())
                 .build();
@@ -58,17 +59,17 @@ public class PaySummaryJob {
 
     @Bean
     @StepScope
-    public JdbcCursorItemReader<PaySummary> paySummaryCursorItemReader() {
+    public JdbcCursorItemReader<PaySummaryDto> paySummaryCursorItemReader() {
         log.info("start paySummaryItemReader");
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         Object requestDate = jobParameters.get("requestDate");
         Object storeId = jobParameters.get("storeId");
 
-        return new JdbcCursorItemReaderBuilder<PaySummary>()
+        return new JdbcCursorItemReaderBuilder<PaySummaryDto>()
                 .name("paySummaryItemReader")
                 .dataSource(dataSource)
                 .sql(sql())
-                .rowMapper(new BeanPropertyRowMapper<>(PaySummary.class))
+                .rowMapper(new BeanPropertyRowMapper<>(PaySummaryDto.class))
                 .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{storeId, requestDate}))
                 .build();
     }
@@ -86,7 +87,7 @@ public class PaySummaryJob {
 
     @Bean
     @StepScope // stepContext 를 이용하려면 필요함
-    public ItemWriter<PaySummary> paySummaryItemWriter() {
+    public ItemWriter<PaySummaryDto> paySummaryItemWriter() {
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         String requestDate = (String) jobParameters.get("requestDate");
         String writeType = (String) jobParameters.get("writeType");
@@ -103,15 +104,15 @@ public class PaySummaryJob {
         };
     }
 
-    private void doLogSummary(List<? extends PaySummary> items) {
-        for (PaySummary item : items) {
+    private void doLogSummary(List<? extends PaySummaryDto> items) {
+        for (PaySummaryDto item : items) {
             log.info("item {}", item);
         }
     }
 
-    private void createSummary(String requestDate, List<? extends PaySummary> items) {
+    private void createSummary(String requestDate, List<? extends PaySummaryDto> items) {
         List<SalesSummary> salesSummaries = new ArrayList<>();
-        for (PaySummary item : items) {
+        for (PaySummaryDto item : items) {
             salesSummaries.add(
                     new SalesSummary(
                             item.getStoreId(),
