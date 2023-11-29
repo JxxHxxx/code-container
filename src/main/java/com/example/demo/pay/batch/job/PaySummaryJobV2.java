@@ -11,6 +11,7 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
+import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.ItemWriter;
@@ -20,6 +21,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -35,12 +37,11 @@ public class PaySummaryJobV2 {
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
     private final SalesSummaryRepository salesSummaryRepository;
-
-    private static final int INTEGER_MAX = Integer.MAX_VALUE;
+    private static final int TOTAL_TRANSACTION_INITIAL_VALUE = 1;
 
     @Bean(name = "pay.summary.job.v2")
     public Job paySummaryJobV2() throws Exception {
-        return jobBuilderFactory.get("paySummaryJob")
+        return jobBuilderFactory.get("pay.summary.job.v2")// 재시작시 잡 이름 찾음
                 .start(paySummaryStepV2())
                 .incrementer(new RunIdIncrementer())
                 .build();
@@ -65,10 +66,18 @@ public class PaySummaryJobV2 {
         return new JdbcCursorItemReaderBuilder<Pay>()
                 .name("paySummaryItemReader")
                 .dataSource(dataSource)
-                .sql("SELECT * FROM pay p WHERE created_date = ? order by store_id ")
+                .sql(mssql())
                 .rowMapper(new BeanPropertyRowMapper<>(Pay.class))
                 .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{requestDate}))
                 .build();
+    }
+
+    private static String mysql() {
+        return "SELECT * FROM pay p WHERE created_date = ? order by store_id ";
+    }
+
+    private static String mssql() {
+        return "SELECT * FROM pay p with(nolock) WHERE created_date = ? order by store_id ";
     }
 
 
@@ -77,7 +86,6 @@ public class PaySummaryJobV2 {
     public ItemWriter<Pay> paySummaryItemWriterV2() {
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         String writeType = (String) jobParameters.get("writeType");
-
         return items -> {
             String storeId = items.get(0).getStoreId();
             log.info("===================== processing storeId : {} =====================", storeId);
@@ -112,8 +120,8 @@ public class PaySummaryJobV2 {
                 salesSummaryRepository.save(new SalesSummary(
                         item.getStoreId(),
                         item.getTotalAmount(),
-                        item.getTotalAmount() - item.getVatAmount(),
-                        1,
+                        item.vatDeductedAmount(),
+                        TOTAL_TRANSACTION_INITIAL_VALUE,
                         item.getCreatedDate(),
                         SystemType.BATCH));
             }

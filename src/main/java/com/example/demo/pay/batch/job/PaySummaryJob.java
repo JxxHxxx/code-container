@@ -42,7 +42,7 @@ public class PaySummaryJob {
 
     @Bean(name = "pay.summary.job")
     public Job paySummaryJob() throws Exception {
-        return jobBuilderFactory.get("paySummaryJob")
+        return jobBuilderFactory.get("pay.summary.job")
                 .start(paySummaryStep())
                 .incrementer(new RunIdIncrementer())
                 .build();

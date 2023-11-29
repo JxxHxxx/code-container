@@ -50,4 +50,8 @@ public class Pay {
         this.createdDate = createdDate;
         this.createdTime = createdTime;
     }
+
+    public Integer vatDeductedAmount() {
+        return this.totalAmount - this.vatAmount;
+    }
 }

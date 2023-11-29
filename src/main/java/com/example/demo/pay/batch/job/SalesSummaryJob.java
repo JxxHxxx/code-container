@@ -36,7 +36,7 @@ public class SalesSummaryJob {
 
     @Bean(name = "sales.summary.job")
     public Job job1() {
-        return jobBuilderFactory.get("sales-summary-job")
+        return jobBuilderFactory.get("sales.summary.job") // DB에 기록됨
                 .start(step1())
                 .incrementer(new RunIdIncrementer())
                 .build();
