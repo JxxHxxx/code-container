@@ -25,8 +25,6 @@ public class SalesSummary {
     private Integer dailyTotalTransaction;
     private LocalDate salesDate;
     private LocalDateTime createTime;
-    private boolean neverChangedFlag;
-
     @Enumerated(EnumType.STRING)
     private SystemType createSystem;
 
@@ -39,7 +37,6 @@ public class SalesSummary {
         this.salesDate = salesDate;
         this.createTime = LocalDateTime.now();
         this.createSystem = createSystem;
-        this.neverChangedFlag = true;
     }
 
     public static SalesSummary constructorStoreIdIsNotExistCase(PayDto payDto, SystemType createSystem) {
@@ -50,21 +47,11 @@ public class SalesSummary {
                 TOTAL_TRANSACTION_INITIAL_VALUE,
                 payDto.getCreatedDate(),
                 createSystem);
-        
-        salesSummary.setNeverChangedFlagToFalse();
+
         return salesSummary;
-    }
-    
-    private SalesSummary setNeverChangedFlagToFalse() {
-        this.neverChangedFlag = false;
-        return this;
     }
 
     public void reflectPayInformation(PayDto payDto) {
-        if (this.neverChangedFlag) {
-            throw new IllegalStateException("거래 정보를 갱신할 수 없습니다. 해당 엔티티에 대한 기존 정보가 존재하지 않습니다.");
-        }
-
         this.dailyTotalSales += payDto.getTotalAmount();
         this.dailyVatDeductedSales += payDto.getTotalAmount() - payDto.getVatAmount();
         this.dailyTotalTransaction += 1;
