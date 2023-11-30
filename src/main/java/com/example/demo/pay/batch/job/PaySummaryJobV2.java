@@ -2,7 +2,7 @@ package com.example.demo.pay.batch.job;
 
 import com.example.demo.pay.Pay;
 import com.example.demo.sales.SalesSummary;
-import com.example.demo.sales.SystemType;
+import com.example.demo.sales.dto.PayDto;
 import com.example.demo.sales.infra.SalesSummaryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,7 +11,6 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepScope;
-import org.springframework.batch.core.launch.JobOperator;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.ItemWriter;
@@ -21,12 +20,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+
+import static com.example.demo.sales.SystemType.BATCH;
 
 @Slf4j
 @Configuration
@@ -37,7 +37,6 @@ public class PaySummaryJobV2 {
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
     private final SalesSummaryRepository salesSummaryRepository;
-    private static final int TOTAL_TRANSACTION_INITIAL_VALUE = 1;
 
     @Bean(name = "pay.summary.job.v2")
     public Job paySummaryJobV2() throws Exception {
@@ -104,26 +103,21 @@ public class PaySummaryJobV2 {
         }
     }
 
-    private void createSummary(List<? extends Pay> items) {
-        for (Pay item : items) {
-            log.info("item {}", item);
-            Optional<SalesSummary> optionalSalesSummary = salesSummaryRepository.findByStoreIdAndSalesDate(item.getStoreId(), item.getCreatedDate());
+    private void createSummary(List<? extends Pay> pays) {
+        for (Pay pay : pays) {
+            log.info("item {}", pay);
+            Optional<SalesSummary> optionalSalesSummary = salesSummaryRepository.findByStoreIdAndSalesDate(pay.getStoreId(), pay.getCreatedDate());
 
+            PayDto payDto = new PayDto(pay.getStoreId(), pay.getTotalAmount(), pay.getVatAmount(), pay.getCreatedDate());
             if (optionalSalesSummary.isPresent()) {
-                Integer totalAmount = item.getTotalAmount();
-                Integer vatDeductedAmount = item.getTotalAmount() - item.getVatAmount();
 
                 SalesSummary findSaleSummary = optionalSalesSummary.get();
-                findSaleSummary.update(totalAmount, vatDeductedAmount);
+                findSaleSummary.reflectPayInformation(payDto);
+
             }
             else {
-                salesSummaryRepository.save(new SalesSummary(
-                        item.getStoreId(),
-                        item.getTotalAmount(),
-                        item.vatDeductedAmount(),
-                        TOTAL_TRANSACTION_INITIAL_VALUE,
-                        item.getCreatedDate(),
-                        SystemType.BATCH));
+                SalesSummary salesSummary = SalesSummary.constructorStoreIdIsNotExistCase(payDto, BATCH);
+                salesSummaryRepository.save(salesSummary);
             }
         }
     }
