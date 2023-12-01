@@ -1,5 +1,9 @@
-package com.example.demo.pay;
+package com.example.demo.pay.domain;
 
+import com.example.demo.pay.support.CreateTimeProvider;
+import com.example.demo.pay.support.IdentifyProvider;
+import com.example.demo.pay.support.PayAmountProvider;
+import com.example.demo.pay.support.PayTypeProvider;
 import com.example.demo.pay.application.VatCalculator;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +17,7 @@ import java.util.UUID;
 
 @Getter
 @Entity
-@Setter
+//@Setter // itemReader RowMapper BeanPropertyRowMapper 사용할 때 사용
 @NoArgsConstructor
 @ToString
 @Table(indexes = @Index(name = "idx_pay_storeId", columnList = "storeId, createdDate"))

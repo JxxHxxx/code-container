@@ -1,6 +1,6 @@
 package com.example.demo.pay.infra;
 
-import com.example.demo.pay.Pay;
+import com.example.demo.pay.domain.Pay;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,4 +1,6 @@
-package com.example.demo.pay;
+package com.example.demo.pay.support;
+
+import com.example.demo.pay.domain.PayType;
 
 import java.util.Random;
 

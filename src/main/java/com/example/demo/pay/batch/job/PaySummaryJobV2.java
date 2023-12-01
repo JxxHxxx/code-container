@@ -1,6 +1,7 @@
 package com.example.demo.pay.batch.job;
 
-import com.example.demo.pay.Pay;
+import com.example.demo.pay.batch.PayRowMapper;
+import com.example.demo.pay.domain.Pay;
 import com.example.demo.sales.SalesSummary;
 import com.example.demo.sales.dto.PayDto;
 import com.example.demo.sales.infra.SalesSummaryRepository;
@@ -37,6 +38,7 @@ public class PaySummaryJobV2 {
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
     private final SalesSummaryRepository salesSummaryRepository;
+    private final PayRowMapper payRowMapper;
 
     @Bean(name = "pay.summary.job.v2")
     public Job paySummaryJobV2() throws Exception {
@@ -66,7 +68,8 @@ public class PaySummaryJobV2 {
                 .name("paySummaryItemReader")
                 .dataSource(dataSource)
                 .sql(mssql())
-                .rowMapper(new BeanPropertyRowMapper<>(Pay.class))
+                .rowMapper(payRowMapper)
+//                .rowMapper(new BeanPropertyRowMapper<>(Pay.class))
                 .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{requestDate}))
                 .build();
     }

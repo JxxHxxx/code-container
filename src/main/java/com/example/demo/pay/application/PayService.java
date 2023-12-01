@@ -1,6 +1,6 @@
 package com.example.demo.pay.application;
 
-import com.example.demo.pay.Pay;
+import com.example.demo.pay.domain.Pay;
 import com.example.demo.pay.dto.PayForm;
 import com.example.demo.pay.dto.PayServiceResponse;
 import com.example.demo.pay.infra.PayRepository;

@@ -1,4 +1,4 @@
-package com.example.demo.pay;
+package com.example.demo.pay.domain;
 
 import lombok.Getter;
 
