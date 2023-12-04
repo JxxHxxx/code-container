@@ -11,6 +11,10 @@ import java.time.LocalDateTime;
 
 import static com.example.demo.sales.SalesSummaryConst.*;
 
+/**
+ * 여기 고쳐야됨 - 총 주문 금액, 총 매출 나눠야됨
+ */
+
 @Getter(AccessLevel.PROTECTED)
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -42,8 +46,8 @@ public class SalesSummary {
     public static SalesSummary constructorStoreIdIsNotExistCase(PayDto payDto, SystemType createSystem) {
         SalesSummary salesSummary = new SalesSummary(
                 payDto.getStoreId(),
-                payDto.getTotalAmount(),
-                payDto.getTotalAmount() - payDto.getVatAmount(),
+                payDto.getPayAmount(),
+                payDto.getPayAmount() - payDto.getVatAmount(),
                 TOTAL_TRANSACTION_INITIAL_VALUE,
                 payDto.getCreatedDate(),
                 createSystem);
@@ -52,8 +56,8 @@ public class SalesSummary {
     }
 
     public void reflectPayInformation(PayDto payDto) {
-        this.dailyTotalSales += payDto.getTotalAmount();
-        this.dailyVatDeductedSales += payDto.getTotalAmount() - payDto.getVatAmount();
+        this.dailyTotalSales += payDto.getPayAmount();
+        this.dailyVatDeductedSales += payDto.getPayAmount() - payDto.getVatAmount();
         this.dailyTotalTransaction += 1;
     }
 }

@@ -42,14 +42,11 @@ public class BatchManager {
         return new SimpleBatchServiceResponse(jobName, executionId, jobParameters);
     }
 
-    public SimpleBatchServiceResponse restart(long executionId) {
+    public SimpleBatchServiceResponse restart(long executionId) throws JobInstanceAlreadyCompleteException, NoSuchJobException, NoSuchJobExecutionException, JobParametersInvalidException, JobRestartException {
         JobExecution jobExecution = jobExplorer.getJobExecution(executionId);
         String jobName = jobExecution.getJobInstance().getJobName();
         JobParameters jobParameters = jobExecution.getJobParameters();
-        executorService.submit(() -> {
-            asyncRestartBatch(executionId);
-
-        });
+        jobOperator.restart(executionId);
 
         return new SimpleBatchServiceResponse(jobName, executionId, jobParameters);
     }

@@ -26,7 +26,7 @@ public class BatchApiController {
     }
 
     @PostMapping("/batch/restart")
-    public ResponseEntity<SimpleBatchResponse> restartBatch(@RequestParam long executionId) {
+    public ResponseEntity<SimpleBatchResponse> restartBatch(@RequestParam long executionId) throws Exception {
         SimpleBatchServiceResponse serviceResponse = batchManager.restart(executionId);
         return ResponseEntity.ok(new SimpleBatchResponse<>("잡 재시작(완료 X)", serviceResponse));
     }

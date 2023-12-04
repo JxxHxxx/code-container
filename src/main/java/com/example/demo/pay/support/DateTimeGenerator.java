@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Random;
 
-public class CreateTimeProvider {
+public class DateTimeGenerator {
 
     private static final Random random = new Random();
 

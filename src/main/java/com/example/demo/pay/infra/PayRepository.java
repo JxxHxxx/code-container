@@ -10,15 +10,12 @@ import java.util.List;
 
 public interface PayRepository extends JpaRepository<Pay, Long> {
 
-    @Query("select distinct p.storeId from Pay p")
+    @Query("select distinct p.orderInformation.storeId from Pay p")
     List<String> findAllStore();
-
-    int countByStoreId(String storeId);
-    List<Pay> findByStoreId(String storeId);
 
     //mysql
     @Query("select p from Pay p " +
-            "where p.storeId =:storeId " +
+            "where p.orderInformation.storeId =:storeId " +
             "and p.createdDate =:requestDate")
     List<Pay> findOneDayPays(@Param("storeId") String storeId, @Param("requestDate") LocalDate requestDate);
 

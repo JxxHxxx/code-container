@@ -81,13 +81,13 @@ public class SalesSummaryJob {
 
     private int calculateDailyTotalSales(List<Pay> paysOfOneReceiver) {
         return paysOfOneReceiver.stream()
-                .mapToInt(Pay::getTotalAmount)
+                .mapToInt(Pay::getPayAmount)
                 .sum();
     }
 
     private int calculateDailyVatDeductedSales(List<Pay> paysOfOneReceiver) {
         return paysOfOneReceiver.stream()
-                .mapToInt(pay -> pay.getTotalAmount() - pay.getVatAmount())
+                .mapToInt(pay -> pay.getPayAmount() - pay.getVatAmount())
                 .sum();
     }
 }

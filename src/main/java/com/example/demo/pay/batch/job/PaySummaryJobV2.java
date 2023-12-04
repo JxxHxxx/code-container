@@ -20,7 +20,6 @@ import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuild
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
-import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -51,8 +50,9 @@ public class PaySummaryJobV2 {
     @Bean
     public Step paySummaryStepV2() throws Exception {
         return stepBuilderFactory.get("paySummaryStep")
-                .<Pay, Pay>chunk(100)
+                . <Pay, Pay>chunk(100)
                 .reader(paySummaryCursorItemReaderV2())
+//                .processor()
                 .writer(paySummaryItemWriterV2())
                 .build();
     }
@@ -67,9 +67,8 @@ public class PaySummaryJobV2 {
         return new JdbcCursorItemReaderBuilder<Pay>()
                 .name("paySummaryItemReader")
                 .dataSource(dataSource)
-                .sql(mssql())
+                .sql(mysql())
                 .rowMapper(payRowMapper)
-//                .rowMapper(new BeanPropertyRowMapper<>(Pay.class))
                 .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{requestDate}))
                 .build();
     }
@@ -111,12 +110,11 @@ public class PaySummaryJobV2 {
             log.info("item {}", pay);
             Optional<SalesSummary> optionalSalesSummary = salesSummaryRepository.findByStoreIdAndSalesDate(pay.getStoreId(), pay.getCreatedDate());
 
-            PayDto payDto = new PayDto(pay.getStoreId(), pay.getTotalAmount(), pay.getVatAmount(), pay.getCreatedDate());
+            PayDto payDto = new PayDto(pay.getStoreId(), pay.getPayAmount(), pay.getVatAmount(), pay.getCreatedDate());
             if (optionalSalesSummary.isPresent()) {
 
                 SalesSummary findSaleSummary = optionalSalesSummary.get();
                 findSaleSummary.reflectPayInformation(payDto);
-
             }
             else {
                 SalesSummary salesSummary = SalesSummary.constructorStoreIdIsNotExistCase(payDto, BATCH);
