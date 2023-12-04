@@ -5,13 +5,8 @@ import com.example.demo.pay.batch.dto.response.SimpleBatchResponse;
 import com.example.demo.pay.batch.application.dto.SimpleBatchServiceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.JobParametersInvalidException;
 import org.springframework.batch.core.launch.JobExecutionNotRunningException;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.NoSuchJobException;
 import org.springframework.batch.core.launch.NoSuchJobExecutionException;
-import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
-import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,6 +29,5 @@ public class BatchApiController {
     public ResponseEntity<SimpleBatchResponse> restartBatch(@RequestParam long executionId) {
         SimpleBatchServiceResponse serviceResponse = batchManager.restart(executionId);
         return ResponseEntity.ok(new SimpleBatchResponse<>("잡 재시작(완료 X)", serviceResponse));
-
     }
 }
