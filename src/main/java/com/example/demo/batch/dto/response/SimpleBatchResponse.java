@@ -1,4 +1,4 @@
-package com.example.demo.pay.batch.dto.response;
+package com.example.demo.batch.dto.response;
 
 import lombok.Getter;
 

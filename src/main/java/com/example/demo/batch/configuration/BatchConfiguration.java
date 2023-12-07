@@ -1,4 +1,4 @@
-package com.example.demo.pay.batch.configuration;
+package com.example.demo.batch.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

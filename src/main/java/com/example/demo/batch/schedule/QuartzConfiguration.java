@@ -1,4 +1,4 @@
-package com.example.demo.pay.batch.schedule;
+package com.example.demo.batch.schedule;
 
 import org.quartz.*;
 import org.springframework.context.annotation.Bean;

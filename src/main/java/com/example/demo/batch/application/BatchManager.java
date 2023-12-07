@@ -1,6 +1,6 @@
-package com.example.demo.pay.batch.application;
+package com.example.demo.batch.application;
 
-import com.example.demo.pay.batch.application.dto.SimpleBatchServiceResponse;
+import com.example.demo.batch.application.dto.SimpleBatchServiceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;

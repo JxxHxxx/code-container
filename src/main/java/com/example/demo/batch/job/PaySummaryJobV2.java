@@ -1,6 +1,6 @@
-package com.example.demo.pay.batch.job;
+package com.example.demo.batch.job;
 
-import com.example.demo.pay.batch.PayRowMapper;
+import com.example.demo.batch.PayRowMapper;
 import com.example.demo.pay.domain.Pay;
 import com.example.demo.sales.SalesSummary;
 import com.example.demo.sales.dto.PayDto;

@@ -1,4 +1,4 @@
-package com.example.demo.pay.batch.job;
+package com.example.demo.batch.job;
 
 
 import com.example.demo.sales.SystemType;

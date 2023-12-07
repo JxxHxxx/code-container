@@ -1,4 +1,4 @@
-package com.example.demo.pay.batch;
+package com.example.demo.batch;
 
 import com.example.demo.pay.domain.*;
 import org.springframework.jdbc.core.RowMapper;

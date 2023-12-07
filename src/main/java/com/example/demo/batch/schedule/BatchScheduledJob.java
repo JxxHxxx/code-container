@@ -1,4 +1,4 @@
-package com.example.demo.pay.batch.schedule;
+package com.example.demo.batch.schedule;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

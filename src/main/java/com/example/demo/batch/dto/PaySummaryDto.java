@@ -1,4 +1,4 @@
-package com.example.demo.pay.batch.dto;
+package com.example.demo.batch.dto;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
