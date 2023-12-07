@@ -1,4 +1,4 @@
-package com.example.demo.pay.dto;
+package com.example.demo.batch.dto.request;
 
 import lombok.Getter;
 import org.springframework.batch.core.JobParameters;

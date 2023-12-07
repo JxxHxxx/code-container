@@ -3,7 +3,7 @@ package com.example.demo.batch.presentation;
 import com.example.demo.batch.application.BatchManager;
 import com.example.demo.batch.application.dto.SimpleBatchServiceResponse;
 import com.example.demo.batch.dto.response.SimpleBatchResponse;
-import com.example.demo.pay.dto.JobLauncherRequest;
+import com.example.demo.batch.dto.request.JobLauncherRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;

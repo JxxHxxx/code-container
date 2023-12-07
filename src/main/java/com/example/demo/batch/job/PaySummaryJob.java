@@ -28,10 +28,14 @@ import java.util.Optional;
 
 import static com.example.demo.sales.SystemType.BATCH;
 
+/**
+ * 결제 데이터를
+ */
+
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class PaySummaryJobV2 {
+public class PaySummaryJob {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
@@ -39,27 +43,27 @@ public class PaySummaryJobV2 {
     private final SalesSummaryRepository salesSummaryRepository;
     private final PayRowMapper payRowMapper;
 
-    @Bean(name = "pay.summary.job.v2")
-    public Job paySummaryJobV2() throws Exception {
-        return jobBuilderFactory.get("pay.summary.job.v2")// 재시작시 잡 이름 찾음
-                .start(paySummaryStepV2())
+    @Bean(name = "pay.summary.job")
+    public Job paySummaryJob() throws Exception {
+        return jobBuilderFactory.get("pay.summary.job")// 재시작시 잡 이름 찾음
+                .start(paySummaryStep())
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
     @Bean
-    public Step paySummaryStepV2() throws Exception {
+    public Step paySummaryStep() throws Exception {
         return stepBuilderFactory.get("paySummaryStep")
                 . <Pay, Pay>chunk(100)
-                .reader(paySummaryCursorItemReaderV2())
+                .reader(paySummaryCursorItemReader())
 //                .processor()
-                .writer(paySummaryItemWriterV2())
+                .writer(paySummaryItemWriter())
                 .build();
     }
 
     @Bean
     @StepScope
-    public JdbcCursorItemReader<Pay> paySummaryCursorItemReaderV2() {
+    public JdbcCursorItemReader<Pay> paySummaryCursorItemReader() {
         log.info("start paySummaryItemReader");
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         Object requestDate = jobParameters.get("requestDate");
@@ -67,7 +71,7 @@ public class PaySummaryJobV2 {
         return new JdbcCursorItemReaderBuilder<Pay>()
                 .name("paySummaryItemReader")
                 .dataSource(dataSource)
-                .sql(mysql())
+                .sql(mssql())
                 .rowMapper(payRowMapper)
                 .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{requestDate}))
                 .build();
@@ -84,7 +88,7 @@ public class PaySummaryJobV2 {
 
     @Bean
     @StepScope // stepContext 를 이용하려면 필요함
-    public ItemWriter<Pay> paySummaryItemWriterV2() {
+    public ItemWriter<Pay> paySummaryItemWriter() {
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         String writeType = (String) jobParameters.get("writeType");
         return items -> {
