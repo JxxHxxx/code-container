@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-public class BatchController {
+public class BatchApiController {
     private final BatchManager batchManager;
     private final JobLauncher jobLauncher;
     private final JobExplorer jobExplorer;

@@ -36,4 +36,15 @@ public class PayInformation {
         this.payType = payType;
         this.payStatus = payStatus;
     }
+
+    @Override
+    public String toString() {
+        return "PayInformation{" +
+                "payerId='" + payerId + '\'' +
+                ", payAmount=" + payAmount +
+                ", vatAmount=" + vatAmount +
+                ", payType=" + payType +
+                ", payStatus=" + payStatus +
+                '}';
+    }
 }

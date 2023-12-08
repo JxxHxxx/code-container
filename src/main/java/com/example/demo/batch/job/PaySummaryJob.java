@@ -29,7 +29,8 @@ import java.util.Optional;
 import static com.example.demo.sales.SystemType.BATCH;
 
 /**
- * 결제 데이터를
+ * 결제 데이터를 합산하여
+ * 매출 요약 데이터를 만든다.
  */
 
 @Slf4j

@@ -3,18 +3,15 @@ package com.example.demo.batch.application;
 import com.example.demo.batch.application.dto.SimpleBatchServiceResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.JobParameters;
-import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.*;
 import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.launch.JobExecutionNotRunningException;
-import org.springframework.batch.core.launch.JobOperator;
-import org.springframework.batch.core.launch.NoSuchJobException;
-import org.springframework.batch.core.launch.NoSuchJobExecutionException;
+import org.springframework.batch.core.launch.*;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
 import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -30,7 +27,6 @@ public class BatchManager {
     private final ExecutorService executorService = new ThreadPoolExecutor(
             10,10,60, TimeUnit.SECONDS,
             new ArrayBlockingQueue(10));
-
 
     public SimpleBatchServiceResponse stop(long executionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
         jobOperator.stop(executionId);

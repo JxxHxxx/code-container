@@ -2,6 +2,7 @@ package com.example.demo.pay.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -23,5 +24,14 @@ public class OrderInformation {
         this.orderNo = orderNo;
         this.orderAmount = orderAmount;
         this.storeId = storeId;
+    }
+
+    @Override
+    public String toString() {
+        return "OrderInformation{" +
+                "orderNo='" + orderNo + '\'' +
+                ", orderAmount=" + orderAmount +
+                ", storeId='" + storeId + '\'' +
+                '}';
     }
 }
