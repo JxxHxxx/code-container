@@ -26,6 +26,7 @@ public class BatchApiController {
     private final JobLauncher jobLauncher;
     private final JobExplorer jobExplorer;
     private final ApplicationContext context;
+
     @GetMapping("/batch/stop")
     public ResponseEntity<SimpleBatchResponse> stopBatch(@RequestParam long executionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
         SimpleBatchServiceResponse serviceResponse = batchManager.stop(executionId);

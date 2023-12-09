@@ -1,6 +1,6 @@
 package com.example.demo.batch.job;
 
-import com.example.demo.batch.PayRowMapper;
+import com.example.demo.batch.mapper.PayRowMapper;
 import com.example.demo.pay.domain.Pay;
 import com.example.demo.sales.SalesSummary;
 import com.example.demo.sales.dto.PayDto;
@@ -72,7 +72,7 @@ public class PaySummaryJob {
         return new JdbcCursorItemReaderBuilder<Pay>()
                 .name("paySummaryItemReader")
                 .dataSource(dataSource)
-                .sql(mssql())
+                .sql(mysql())
                 .rowMapper(payRowMapper)
                 .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{requestDate}))
                 .build();

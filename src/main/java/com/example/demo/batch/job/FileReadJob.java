@@ -1,5 +1,6 @@
 package com.example.demo.batch.job;
 
+import com.example.demo.batch.mapper.PayFieldSetMapper;
 import com.example.demo.pay.domain.Pay;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +29,7 @@ public class FileReadJob {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
-    private final FieldSetMapper simpleRowMapper;
+    private final FieldSetMapper payFieldSetMapper;
 
     @Bean(name = "file.read.job")
     public Job fileReadJob() throws IOException {
@@ -51,12 +52,11 @@ public class FileReadJob {
     @Bean
     @StepScope
     public FlatFileItemReader<FieldSet> flatFileItemReader(@Value("#{jobParameters['payFile']}") String inputFileName) throws IOException {
-
         return new FlatFileItemReaderBuilder<FieldSet>()
                 .name("fileItemReader")
                 .resource(new ClassPathResource(inputFileName))
                 .lineTokenizer(new DelimitedLineTokenizer()) // FlatFile 에서 라인(행)을 처리, 구분자를 통해 한 행에서 열들을 추출함
-                .fieldSetMapper(simpleRowMapper)
+                .fieldSetMapper(payFieldSetMapper)
 //                .fieldSetMapper(new PassThroughFieldSetMapper())
                 .build();
     }
