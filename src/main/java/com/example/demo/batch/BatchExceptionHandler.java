@@ -1,8 +1,10 @@
 package com.example.demo.batch;
 
+import com.example.demo.batch.application.dto.JobResultResponse;
 import com.example.demo.batch.mapper.BatchExecuteException;
 import com.example.demo.batch.presentation.BatchApiController;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.batch.core.ExitStatus;
 import org.springframework.batch.item.file.FlatFileParseException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -20,8 +22,9 @@ public class BatchExceptionHandler {
     }
 
     @ExceptionHandler(BatchExecuteException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(BatchExecuteException exception) {
+    public ResponseEntity<JobResultResponse> handleIllegalArgumentException(BatchExecuteException exception) {
         log.error("error", exception);
-        return ResponseEntity.badRequest().body("파일 내 형식에 맞지 않은 값이 존재합니다.");
+        JobResultResponse response = new JobResultResponse(ExitStatus.FAILED.getExitCode());
+        return ResponseEntity.badRequest().body(response);
     }
 }
