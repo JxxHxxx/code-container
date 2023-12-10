@@ -15,7 +15,7 @@ public class PayFieldSetMapper implements FieldSetMapper<Pay> {
 
     @Override
     public Pay mapFieldSet(FieldSet fieldSet) throws BindException {
-        PayDto payDto = create(fieldSet.getValues());
+        PayDto payDto = create(fieldSet);
 
         OrderInformation orderInformation = new OrderInformation(payDto.orderNo, payDto.orderAmount, payDto.storeId);
         PayInformation payInformation = new PayInformation(payDto.payerId, payDto.payAmount, payDto.vatAmount, payDto.payType, payDto.payStatus);
@@ -23,28 +23,28 @@ public class PayFieldSetMapper implements FieldSetMapper<Pay> {
         return new Pay(orderInformation, payInformation, payDto.createdDate, payDto.createdTime);
     }
 
-    private PayDto create(String[] oneLine) {
+    private PayDto create(FieldSet fieldSet) {
         LocalDate createdDate = null;
         LocalTime createdTime = null;
-        Integer orderAmount = null;
+        int orderAmount = 0;
         String orderNo = null;
         String storeId = null;
-        Integer payAmount = null;
+        int payAmount = 0;
         PayStatus payStatus = null;
         PayType payType = null;
         String payerId = null;
-        Integer vatAmount = null;
+        int vatAmount = 0;
         try {
-            createdDate = LocalDate.parse(oneLine[1]);
-            createdTime = LocalTime.parse(oneLine[2]);
-            orderAmount = Integer.valueOf(oneLine[3]);
-            orderNo = oneLine[4];
-            storeId = oneLine[5];
-            payAmount = Integer.valueOf(oneLine[6]);
-            payStatus = PayStatus.valueOf(oneLine[7]);
-            payType = PayType.valueOf(oneLine[8]);
-            payerId = String.valueOf(oneLine[9]);
-            vatAmount = Integer.valueOf(oneLine[10]);
+            createdDate = LocalDate.parse(fieldSet.readString("created_date"));
+            createdTime = LocalTime.parse(fieldSet.readString("created_time"));
+            orderAmount = fieldSet.readInt("order_amount");
+            orderNo = fieldSet.readString("order_no");
+            storeId = fieldSet.readString("store_id");
+            payAmount = fieldSet.readInt("pay_amount");
+            payStatus = PayStatus.valueOf(fieldSet.readString("pay_status"));
+            payType = PayType.valueOf(fieldSet.readString("pay_type"));
+            payerId = fieldSet.readString("payer_id");
+            vatAmount = fieldSet.readInt("vat_amount");
         } catch (IllegalArgumentException e) {
             throw new BatchExecuteException("형변환 할 수 없음");
         }

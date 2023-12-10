@@ -59,7 +59,10 @@ public class FileReadJob {
                 .resource(new ClassPathResource(inputFileName))
                 .linesToSkip(1)
                 .skippedLinesCallback(line -> log.info("skipped line : {}", line))
-                .lineTokenizer(new DelimitedLineTokenizer()) // FlatFile 에서 라인(행)을 처리, 구분자를 통해 한 행에서 열들을 추출함
+//                .lineTokenizer(new DelimitedLineTokenizer()) // FlatFile 에서 라인(행)을 처리, 구분자를 통해 한 행에서 열들을 추출함
+                .delimited()
+                .names(new String[]{"pay_id", "created_date", "created_time", "order_amount", "order_no",
+                                    "store_id", "pay_amount", "pay_status", "pay_type", "payer_id", "vat_amount"})
                 .fieldSetMapper(payFieldSetMapper)
                 .build();
     }
