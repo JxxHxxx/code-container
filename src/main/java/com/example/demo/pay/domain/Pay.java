@@ -11,9 +11,8 @@ import java.time.LocalTime;
 
 @Getter
 @Entity
-//@Setter // itemReader RowMapper BeanPropertyRowMapper 사용할 때 사용
 @NoArgsConstructor
-@ToString
+@ToString(exclude = "id")
 @Table(indexes = @Index(name = "idx_pay_storeId", columnList = "store_id, created_date"))
 public class Pay {
 

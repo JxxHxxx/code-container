@@ -12,7 +12,9 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
+import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
+import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.FieldSet;
@@ -55,10 +57,21 @@ public class FileReadJob {
         return new FlatFileItemReaderBuilder<FieldSet>()
                 .name("fileItemReader")
                 .resource(new ClassPathResource(inputFileName))
+                .linesToSkip(1)
+                .skippedLinesCallback(line -> log.info("skipped line : {}", line))
                 .lineTokenizer(new DelimitedLineTokenizer()) // FlatFile 에서 라인(행)을 처리, 구분자를 통해 한 행에서 열들을 추출함
                 .fieldSetMapper(payFieldSetMapper)
-//                .fieldSetMapper(new PassThroughFieldSetMapper())
                 .build();
+    }
+
+    private LineMapper<FieldSet> payLineMapper() {
+        DefaultLineMapper<FieldSet> defaultLineMapper = new DefaultLineMapper<>();
+        DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
+        lineTokenizer.setDelimiter(",");
+        defaultLineMapper.setLineTokenizer(lineTokenizer);
+        defaultLineMapper.setFieldSetMapper(payFieldSetMapper);
+
+        return defaultLineMapper;
     }
 
     @Bean
