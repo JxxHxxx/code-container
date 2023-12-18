@@ -20,7 +20,7 @@ public class QMessageGenerator {
                 qMessageForm.getTaskType(),
                 MessageStatus.SENT,
                 new Requester(qMessageForm.getRequesterId()),
-                qMessageForm.getReceiverType());
+                qMessageForm.getServiceType());
 
         qMessageRepository.save(qMessage);
     }

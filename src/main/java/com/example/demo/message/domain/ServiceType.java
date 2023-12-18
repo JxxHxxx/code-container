@@ -3,12 +3,12 @@ package com.example.demo.message.domain;
 import lombok.Getter;
 
 @Getter
-public enum ReceiverType {
-    PAYMENT("결제 서버"), STORE("가게");
+public enum ServiceType {
+    ORDER("주문 서버"), OTHER("제3자");
 
     private final String description;
 
-    ReceiverType(String description) {
+    ServiceType(String description) {
         this.description = description;
     }
 }

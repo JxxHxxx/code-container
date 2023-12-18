@@ -1,5 +1,6 @@
 package com.example.demo.message.domain.processor;
 
+import com.example.demo.message.application.PaymentMessageService;
 import com.example.demo.message.domain.QMessage;
 import com.example.demo.message.domain.QMessageHistory;
 import com.example.demo.message.domain.TaskResult;
@@ -8,6 +9,9 @@ import com.example.demo.message.infra.QMessageRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.sql.SQLException;
 
 import static com.example.demo.message.domain.MessageStatus.*;
 import static com.example.demo.message.domain.MessageStatus.RETRY;
@@ -19,21 +23,29 @@ public class PaymentMessageProcessor {
 
     private final QMessageRepository qMessageRepository;
     private final QMessageHistoryRepository qMessageHistoryRepository;
+    private final PaymentMessageService paymentMessageService;
 
 
+    @Transactional
     public TaskResult execute(QMessage qMessage) {
         if (qMessage.messageStatus(SENT)) {
-            qMessage.changeMessageStatus(SUCCESS);
-            log.info("결제 서버 메시지 전송 작업 타입 {}", qMessage.getTaskType().getFullName()); // bz logic
+            qMessage.changeMessageStatus(PROCESSING);
+            log.info("주문 서버 메시지 전송 작업 타입 {}", qMessage.getTaskType().getFullName()); // bz logic
+            try {
+                paymentMessageService.call(qMessage.getServiceType().toString());
+                qMessage.changeMessageStatus(SUCCESS);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
 
             createQMessageHistory(qMessage);
+            qMessageRepository.delete(qMessage);
             return TaskResult.FINISHED;
         }
 
         if (qMessage.messageStatus(SUCCESS)) {
             log.info("이미 수신이 완료된 메시지 입니다. messageId : {}", qMessage.getMessageId()); // info
 
-            createQMessageHistory(qMessage);
             return TaskResult.FINISHED;
         }
 

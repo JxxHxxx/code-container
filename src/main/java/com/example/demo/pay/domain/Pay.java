@@ -2,12 +2,13 @@ package com.example.demo.pay.domain;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+
+import static com.example.demo.pay.domain.PayStatus.PAYMENT_COMPLETED;
 
 @Getter
 @Entity
@@ -34,6 +35,36 @@ public class Pay {
         this.payInformation = payInformation;
         this.createdDate = createdDate;
         this.createdTime = createdTime;
+    }
+
+    // order-status 
+    // 0 : 주문 완료 
+    // 1 : 접수 
+    // 2 : 제조 
+    // 3 : 배송 
+    // 4 : 배송 완료 
+    public boolean refund(int orderStatus) {
+        validateRefundablePayment(orderStatus);
+
+        payInformation.changePayStatus(PayStatus.REFUND_COMPLETED);
+        return true;
+    }
+
+    private  void validateRefundablePayment(int orderStatus) {
+        if (isBeforeDelivery(orderStatus)) {
+            throw new ImpossibleRefundException("환불이 불가능합니다. 사유 :" + orderStatus);
+        }
+        if (isNotPaymentCompleted()) {
+            throw new ImpossibleRefundException("환불이 불가능합니다. 사유 :" + payInformation.getPayStatus().getDescription());
+        }
+    }
+
+    private boolean isNotPaymentCompleted() {
+        return !PAYMENT_COMPLETED.equals(payInformation.getPayStatus());
+    }
+
+    private boolean isBeforeDelivery(int orderStatus) {
+        return orderStatus == 0 || orderStatus == 1 || orderStatus == 2 ;
     }
 
     public Integer vatDeductedAmount() {

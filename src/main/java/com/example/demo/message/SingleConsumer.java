@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.example.demo.message.domain.ReceiverType.*;
+import static com.example.demo.message.domain.ServiceType.*;
 
 @Slf4j
 @MessageEndpoint
@@ -23,7 +23,7 @@ public class SingleConsumer {
     private final StoreMessageProcessor storeMessageProcessor;
 
     @Transactional
-//    @ServiceActivator(inputChannel = "messageChannel")
+    @ServiceActivator(inputChannel = "messageChannel")
     public void handleMessage(List<QMessage> messages) throws InterruptedException {
         messages.forEach(qMessage -> {
             log.info("=================START====================");
@@ -31,11 +31,11 @@ public class SingleConsumer {
 
             TaskResult taskResult = null;
             // 수신자 : 결제 서버
-            if (qMessage.receiverType(PAYMENT)) {
+            if (qMessage.receiverType(ORDER)) {
                 taskResult = paymentMessageProcessor.execute(qMessage);
             }
-            // 수신자 : 가게주
-            if (qMessage.receiverType(STORE)) {
+            // 수신자 : 그 외 서버
+            if (qMessage.receiverType(OTHER)) {
                 taskResult = storeMessageProcessor.execute(qMessage);
             }
 

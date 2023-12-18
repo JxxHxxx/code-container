@@ -20,19 +20,16 @@ public class QMessage {
     @Embedded
     private Requester requester;
     @Enumerated(EnumType.STRING)
-    private ReceiverType receiverType;
+    private ServiceType serviceType;
 
-    public QMessage(TaskType taskType, MessageStatus messageStatus, Requester requester, ReceiverType receiverType) {
+    public QMessage(TaskType taskType, MessageStatus messageStatus, Requester requester, ServiceType serviceType) {
         this.taskType = taskType;
         this.messageStatus = messageStatus;
         this.requester = requester;
-        this.receiverType = receiverType;
+        this.serviceType = serviceType;
     }
-
-    public QMessage(TaskType taskType, Requester requester, ReceiverType receiverType) {
-        this.taskType = taskType;
-        this.requester = requester;
-        this.receiverType = receiverType;
+    public static QMessage sentToOrderService(TaskType taskType, Requester requester) {
+        return new QMessage(taskType, MessageStatus.SENT, requester, ServiceType.ORDER);
     }
 
     public void changeMessageStatus(MessageStatus messageStatus) {
@@ -43,8 +40,8 @@ public class QMessage {
         return this.messageStatus.equals(messageStatus);
     }
 
-    public boolean receiverType(ReceiverType receiverType) {
-        return this.receiverType.equals(receiverType);
+    public boolean receiverType(ServiceType serviceType) {
+        return this.serviceType.equals(serviceType);
     }
 
     @Override
@@ -54,7 +51,7 @@ public class QMessage {
                 ", taskType=" + taskType +
                 ", messageStatus=" + messageStatus +
                 ", requester=" + requester +
-                ", receiverType=" + receiverType +
+                ", receiverType=" + serviceType +
                 '}';
     }
 }
