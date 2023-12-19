@@ -21,10 +21,12 @@ public class QMessageHistory {
     private MessageStatus messageStatus;
     @Embedded
     private Requester requester;
+    private String orderNo;
     private LocalDateTime executeTime;
 
-    public QMessageHistory(Long QMessageId, TaskType taskType, MessageStatus messageStatus, Requester requester) {
+    public QMessageHistory(Long QMessageId, String orderNo, TaskType taskType, MessageStatus messageStatus, Requester requester) {
         this.QMessageId = QMessageId;
+        this.orderNo = orderNo;
         this.taskType = taskType;
         this.messageStatus = messageStatus;
         this.requester = requester;

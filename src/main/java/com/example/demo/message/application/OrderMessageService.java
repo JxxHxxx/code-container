@@ -1,5 +1,7 @@
 package com.example.demo.message.application;
 
+import com.example.demo.message.infra.OrderMessageRepository;
+import com.example.demo.message.model.OrderMessageParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,12 +15,11 @@ import java.sql.SQLException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class PaymentMessageService {
-    @Qualifier(value = "cardJdbcTemplate")
-    private final JdbcTemplate cardJdbcTemplate;
+public class OrderMessageService {
+    private final OrderMessageRepository orderMessageRepository;
 
     @Transactional
-    public void call(String param) throws SQLException {
-        cardJdbcTemplate.update("INSERT INTO test values (?)", ps -> ps.setString(1, param));
+    public void sendInsertQuery(OrderMessageParam param) throws SQLException {
+        orderMessageRepository.insert(param);
     }
 }

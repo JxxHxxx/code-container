@@ -8,11 +8,13 @@ import lombok.Getter;
 public class QMessageForm {
     private final TaskType taskType;
     private final String requesterId;
+    private final String orderNo;
     private final ServiceType serviceType;
 
-    public QMessageForm(TaskType taskType, String requesterId, ServiceType serviceType) {
+    public QMessageForm(TaskType taskType, String requesterId, String orderNo, ServiceType serviceType) {
         this.taskType = taskType;
         this.requesterId = requesterId;
+        this.orderNo = orderNo;
         this.serviceType = serviceType;
     }
 }

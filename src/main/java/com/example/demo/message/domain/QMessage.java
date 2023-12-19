@@ -19,17 +19,21 @@ public class QMessage {
     private MessageStatus messageStatus;
     @Embedded
     private Requester requester;
+
+    private String orderNo;
     @Enumerated(EnumType.STRING)
     private ServiceType serviceType;
 
-    public QMessage(TaskType taskType, MessageStatus messageStatus, Requester requester, ServiceType serviceType) {
+    public QMessage(TaskType taskType, MessageStatus messageStatus, Requester requester, String orderNo, ServiceType serviceType) {
         this.taskType = taskType;
         this.messageStatus = messageStatus;
+        this.orderNo = orderNo;
         this.requester = requester;
         this.serviceType = serviceType;
     }
-    public static QMessage sentToOrderService(TaskType taskType, Requester requester) {
-        return new QMessage(taskType, MessageStatus.SENT, requester, ServiceType.ORDER);
+
+    public static QMessage orderRefundMessage(Requester requester, String orderNo) {
+        return new QMessage(TaskType.OC01, MessageStatus.SENT, requester, orderNo, ServiceType.ORDER);
     }
 
     public void changeMessageStatus(MessageStatus messageStatus) {

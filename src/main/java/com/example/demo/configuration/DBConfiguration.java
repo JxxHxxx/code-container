@@ -1,4 +1,4 @@
-package com.example.demo.message.configuration;
+package com.example.demo.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -6,11 +6,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 
 import javax.sql.DataSource;
 
 @Configuration
-public class ThirdPartyDBConfiguration {
+public class DBConfiguration {
 
     /**
      * default datasource
@@ -27,24 +28,29 @@ public class ThirdPartyDBConfiguration {
                 .build();
     }
 
-    @Value("${3rd-party.pay.datasource.url}")
-    private String payServerUrl;
-    @Value("${3rd-party.pay.datasource.username}")
-    private String payServerUsername;
-    @Value("${3rd-party.pay.datasource.password}")
-    private String payServerPassword;
+    @Value("${3rd-party.order.datasource.url}")
+    private String orderDbUrl;
+    @Value("${3rd-party.order.datasource.username}")
+    private String orderDbUsername;
+    @Value("${3rd-party.order.datasource.password}")
+    private String orderDbPassword;
 
-    @Bean(name = "cardJdbcTemplate")
-    public JdbcTemplate cardJdbcTemplate() {
-        return new JdbcTemplate(payDataSource());
+    @Bean(name = "orderJdbcTemplate")
+    public JdbcTemplate orderJdbcTemplate() {
+        return new JdbcTemplate(orderDataSource());
+    }
+
+    @Bean(name = "orderNamedParameterJdbcTemplate")
+    public NamedParameterJdbcTemplate orderNamedParameterJdbcTemplate() {
+        return new NamedParameterJdbcTemplate(orderDataSource());
     }
     @Bean
-    public DataSource payDataSource() {
+    public DataSource orderDataSource() {
 
         return DataSourceBuilder.create()
-                .url(payServerUrl)
-                .username(payServerUsername)
-                .password(payServerPassword)
+                .url(orderDbUrl)
+                .username(orderDbUsername)
+                .password(orderDbPassword)
                 .build();
     }
 }

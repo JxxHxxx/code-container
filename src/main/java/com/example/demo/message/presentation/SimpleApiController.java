@@ -12,7 +12,6 @@ public class SimpleApiController {
 
     private final Provider provider;
 
-
     @PostMapping("/queue")
     public String sendMessage() {
         return "Q 생성 완료";

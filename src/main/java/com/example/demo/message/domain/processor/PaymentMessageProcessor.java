@@ -1,11 +1,12 @@
 package com.example.demo.message.domain.processor;
 
-import com.example.demo.message.application.PaymentMessageService;
+import com.example.demo.message.application.OrderMessageService;
 import com.example.demo.message.domain.QMessage;
 import com.example.demo.message.domain.QMessageHistory;
 import com.example.demo.message.domain.TaskResult;
 import com.example.demo.message.infra.QMessageHistoryRepository;
 import com.example.demo.message.infra.QMessageRepository;
+import com.example.demo.message.model.OrderMessageParam;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -23,7 +24,7 @@ public class PaymentMessageProcessor {
 
     private final QMessageRepository qMessageRepository;
     private final QMessageHistoryRepository qMessageHistoryRepository;
-    private final PaymentMessageService paymentMessageService;
+    private final OrderMessageService orderMessageService;
 
 
     @Transactional
@@ -32,7 +33,9 @@ public class PaymentMessageProcessor {
             qMessage.changeMessageStatus(PROCESSING);
             log.info("주문 서버 메시지 전송 작업 타입 {}", qMessage.getTaskType().getFullName()); // bz logic
             try {
-                paymentMessageService.call(qMessage.getServiceType().toString());
+                //
+                OrderMessageParam orderMessageParam = OrderMessageParam.create(qMessage.getOrderNo(), qMessage.getTaskType());
+                orderMessageService.sendInsertQuery(orderMessageParam);
                 qMessage.changeMessageStatus(SUCCESS);
             } catch (SQLException e) {
                 throw new RuntimeException(e);
@@ -64,6 +67,7 @@ public class PaymentMessageProcessor {
     private void createQMessageHistory(QMessage qMessage) {
         QMessageHistory qMessageHistory = new QMessageHistory(
                 qMessage.getMessageId(),
+                qMessage.getOrderNo(),
                 qMessage.getTaskType(),
                 qMessage.getMessageStatus(),
                 qMessage.getRequester());

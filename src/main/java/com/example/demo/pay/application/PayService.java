@@ -2,7 +2,6 @@ package com.example.demo.pay.application;
 
 import com.example.demo.message.domain.QMessage;
 import com.example.demo.message.domain.Requester;
-import com.example.demo.message.domain.TaskType;
 import com.example.demo.message.infra.QMessageRepository;
 import com.example.demo.pay.domain.*;
 import com.example.demo.pay.dto.PayForm;
@@ -64,11 +63,12 @@ public class PayService {
         boolean refundIsSuccessful = pay.refund(orderStatus);
 
         if (refundIsSuccessful) {
+            // 환불 요청 정상 수행 시 History INSERT
             PayHistory payHistory = new PayHistory(pay.getPayStatus(), pay);
             payHistoryRepository.save(payHistory);
-
+            // 환불 요청 정상 수행 시 Order 서버로 환불 메시지 전송
             Requester requester = new Requester(pay.getPayerId());
-            QMessage qMessage = QMessage.sentToOrderService(OC01, requester);
+            QMessage qMessage = QMessage.orderRefundMessage(requester, pay.getOrderNo());
             qMessageRepository.save(qMessage);
         }
 
