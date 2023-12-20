@@ -13,6 +13,7 @@ import java.time.LocalTime;
 public class PayRowMapper implements RowMapper<Pay> {
     @Override
     public Pay mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Long payId = rs.getLong("pay_id");
         OrderInformation orderInformation = new OrderInformation(
                 rs.getString("order_no"),
                 rs.getInt("order_amount"),
@@ -25,7 +26,7 @@ public class PayRowMapper implements RowMapper<Pay> {
                 PayType.valueOf(rs.getString("pay_type")),
                 PayStatus.valueOf(rs.getString("pay_status")));
 
-        return new Pay(orderInformation,
+        return new Pay(payId,orderInformation,
                 payInformation,
                 LocalDate.parse(rs.getString("created_date")),
                 LocalTime.parse(rs.getString("created_time")));

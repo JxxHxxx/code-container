@@ -1,6 +1,7 @@
 package com.example.demo.batch.job;
 
 import com.example.demo.batch.job.processor.PaySummaryItemProcessor;
+import com.example.demo.batch.job.processor.UnableToProcessException;
 import com.example.demo.batch.mapper.PayRowMapper;
 import com.example.demo.pay.domain.Pay;
 import com.example.demo.sales.SalesSummary;
@@ -27,8 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static com.example.demo.sales.SystemType.BATCH;
-
 /**
  * 결제 데이터를 합산하여
  * 매출 요약 데이터를 만든다.
@@ -37,42 +36,45 @@ import static com.example.demo.sales.SystemType.BATCH;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class PaySummaryJob {
+public class PaySummaryJobV5 {
 
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
     private final SalesSummaryRepository salesSummaryRepository;
-    private final PaySummaryItemProcessor itemProcessor;
+    private final PaySummaryItemProcessor paySummaryItemProcessor;
     private final PayRowMapper payRowMapper;
 
-    @Bean(name = "pay.summary.job")
-    public Job paySummaryJob() throws Exception {
-        return jobBuilderFactory.get("pay.summary.job")// 재시작시 잡 이름 찾음
-                .start(paySummaryStep())
+    @Bean(name = "pay.summary.job.v5")
+    public Job paySummaryJobV5() throws Exception {
+        return jobBuilderFactory.get("pay.summary.job.v5")// 재시작시 잡 이름 찾음
+                .start(paySummaryStepV5())
                 .incrementer(new RunIdIncrementer())
                 .build();
     }
 
     @Bean
-    public Step paySummaryStep() throws Exception {
-        return stepBuilderFactory.get("paySummaryStep")
+    public Step paySummaryStepV5() throws Exception {
+        return stepBuilderFactory.get("paySummaryStepV5")
                 . <Pay, Pay>chunk(100)
-                .reader(paySummaryCursorItemReader())
-//                .processor()
-                .writer(paySummaryItemWriter())
+                .reader(paySummaryCursorItemReaderV5())
+                .processor(paySummaryItemProcessor)
+                .writer(paySummaryItemWriterV5())
+                .faultTolerant()
+                .skip(UnableToProcessException.class)
+                .skipLimit(Integer.MAX_VALUE)
                 .build();
     }
 
     @Bean
     @StepScope
-    public JdbcCursorItemReader<Pay> paySummaryCursorItemReader() {
-        log.info("start paySummaryItemReader");
+    public JdbcCursorItemReader<Pay> paySummaryCursorItemReaderV5() {
+        log.info("start paySummaryItemReaderV5");
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         Object requestDate = jobParameters.get("requestDate");
 
         return new JdbcCursorItemReaderBuilder<Pay>()
-                .name("paySummaryItemReader")
+                .name("paySummaryItemReaderV5")
                 .dataSource(dataSource)
                 .sql(mssql())
                 .rowMapper(payRowMapper)
@@ -91,7 +93,7 @@ public class PaySummaryJob {
 
     @Bean
     @StepScope // stepContext 를 이용하려면 필요함
-    public ItemWriter<Pay> paySummaryItemWriter() {
+    public ItemWriter<Pay> paySummaryItemWriterV5() {
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         String writeType = (String) jobParameters.get("writeType");
         return items -> {

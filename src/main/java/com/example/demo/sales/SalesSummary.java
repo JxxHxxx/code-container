@@ -43,14 +43,14 @@ public class SalesSummary {
         this.createSystem = createSystem;
     }
 
-    public static SalesSummary constructorStoreIdIsNotExistCase(PayDto payDto, SystemType createSystem) {
+    public static SalesSummary isStoresFirstOfTheDaySalesSummary(PayDto payDto) {
         SalesSummary salesSummary = new SalesSummary(
                 payDto.getStoreId(),
                 payDto.getPayAmount(),
                 payDto.getPayAmount() - payDto.getVatAmount(),
                 TOTAL_TRANSACTION_INITIAL_VALUE,
                 payDto.getCreatedDate(),
-                createSystem);
+                SystemType.BATCH);
 
         return salesSummary;
     }

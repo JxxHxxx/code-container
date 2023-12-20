@@ -2,6 +2,7 @@ package com.example.demo.batch.application;
 
 import com.example.demo.batch.application.dto.JobResultResponse;
 import com.example.demo.batch.dto.request.JobLauncherRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.*;

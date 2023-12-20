@@ -30,6 +30,11 @@ public class Pay {
     @Column(name = "created_time")
     private LocalTime createdTime;
 
+    public Pay(Long id, OrderInformation orderInformation, PayInformation payInformation, LocalDate createdDate, LocalTime createdTime) {
+        this(orderInformation, payInformation, createdDate, createdTime);
+        this.id = id;
+    }
+
     public Pay(OrderInformation orderInformation, PayInformation payInformation, LocalDate createdDate, LocalTime createdTime) {
         this.orderInformation = orderInformation;
         this.payInformation = payInformation;
@@ -57,6 +62,10 @@ public class Pay {
         if (isNotPaymentCompleted()) {
             throw new ImpossibleRefundException("환불이 불가능합니다. 사유 :" + payInformation.getPayStatus().getDescription());
         }
+    }
+
+    public boolean isCompletedPayment() {
+        return PAYMENT_COMPLETED.equals(getPayStatus());
     }
 
     private boolean isNotPaymentCompleted() {
