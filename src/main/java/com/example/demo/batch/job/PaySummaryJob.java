@@ -1,6 +1,7 @@
 package com.example.demo.batch.job;
 
 import com.example.demo.batch.job.processor.PaySummaryItemProcessor;
+import com.example.demo.batch.job.processor.UnableToProcessException;
 import com.example.demo.batch.mapper.PayRowMapper;
 import com.example.demo.pay.domain.Pay;
 import com.example.demo.sales.SalesSummary;
@@ -43,7 +44,7 @@ public class PaySummaryJob {
     private final StepBuilderFactory stepBuilderFactory;
     private final DataSource dataSource;
     private final SalesSummaryRepository salesSummaryRepository;
-    private final PaySummaryItemProcessor itemProcessor;
+    private final PaySummaryItemProcessor paySummaryItemProcessor;
     private final PayRowMapper payRowMapper;
 
     @Bean(name = "pay.summary.job")
@@ -59,8 +60,11 @@ public class PaySummaryJob {
         return stepBuilderFactory.get("paySummaryStep")
                 . <Pay, Pay>chunk(100)
                 .reader(paySummaryCursorItemReader())
-//                .processor()
+                .processor(paySummaryItemProcessor)
                 .writer(paySummaryItemWriter())
+                .faultTolerant()
+                .skipLimit(Integer.MAX_VALUE)
+                .skip(UnableToProcessException.class)
                 .build();
     }
 

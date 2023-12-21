@@ -1,6 +1,5 @@
 package com.example.demo.batch.presentation;
 
-import com.example.demo.batch.application.BatchManager;
 import com.example.demo.batch.application.JobLaunchService;
 import com.example.demo.batch.application.dto.JobResultResponse;
 import com.example.demo.batch.application.dto.SimpleBatchServiceResponse;
@@ -21,26 +20,25 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 public class BatchApiController {
-    private final BatchManager batchManager;
     private final JobLaunchService jobLaunchService;
-
-    @GetMapping("/batch/stop")
-    public ResponseEntity<SimpleBatchResponse> stopBatch(@RequestParam long executionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
-        SimpleBatchServiceResponse serviceResponse = batchManager.stop(executionId);
-
-        return ResponseEntity.ok(new SimpleBatchResponse<>("잡 중지", serviceResponse));
-    }
-
-    @PostMapping("/batch/restart")
-    public ResponseEntity<SimpleBatchResponse> restartBatch(@RequestParam long executionId) throws Exception {
-        SimpleBatchServiceResponse serviceResponse = batchManager.restart(executionId);
-        return ResponseEntity.ok(new SimpleBatchResponse<>("잡 재시작(완료 X)", serviceResponse));
-    }
 
     @PostMapping("/batch/run")
     public ResponseEntity<JobResultResponse> runJob(@RequestBody JobLauncherRequest request) throws JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         JobResultResponse jobResultResponse = jobLaunchService.executeJob(request);
 
         return ResponseEntity.ok(jobResultResponse);
+    }
+
+    @GetMapping("/batch/stop")
+    public ResponseEntity<SimpleBatchResponse> stopBatch(@RequestParam long executionId) throws NoSuchJobExecutionException, JobExecutionNotRunningException {
+        SimpleBatchServiceResponse serviceResponse = jobLaunchService.stop(executionId);
+
+        return ResponseEntity.ok(new SimpleBatchResponse<>("잡 중지", serviceResponse));
+    }
+
+    @PostMapping("/batch/restart")
+    public ResponseEntity<SimpleBatchResponse> restartBatch(@RequestParam long executionId) throws Exception {
+        SimpleBatchServiceResponse serviceResponse = jobLaunchService.restart(executionId);
+        return ResponseEntity.ok(new SimpleBatchResponse<>("잡 재시작(완료 X)", serviceResponse));
     }
 }

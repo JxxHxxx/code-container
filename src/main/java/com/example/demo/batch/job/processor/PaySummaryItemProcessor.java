@@ -3,7 +3,6 @@ package com.example.demo.batch.job.processor;
 import com.example.demo.pay.domain.Pay;
 
 import com.example.demo.pay.domain.PayStatus;
-import com.example.demo.sales.dto.PayDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ExecutionContext;
@@ -12,9 +11,7 @@ import org.springframework.batch.item.ItemStreamSupport;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 
 @Slf4j
 @Component
