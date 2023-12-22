@@ -1,6 +1,7 @@
 package com.example.demo.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.batch.BatchProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,11 +17,15 @@ public class DBConfiguration {
     /**
      * default datasource
      */
+    @Value("${spring.datasource.url}")
+    private String url;
+    @Value("${spring.datasource.username}")
+    private String username;
+    @Value("${spring.datasource.password}")
+    private String password;
     @Bean
     @Primary
-    public DataSource dataSource(@Value("${spring.datasource.url}") String url,
-                                 @Value("${spring.datasource.username}") String username,
-                                 @Value("${spring.datasource.password}") String password) {
+    public DataSource dataSource() {
         return DataSourceBuilder.create()
                 .url(url)
                 .username(username)
@@ -28,6 +33,11 @@ public class DBConfiguration {
                 .build();
     }
 
+    @Bean(name = "jdbcTemplate")
+    @Primary
+    public JdbcTemplate jdbcTemplate() {
+        return new JdbcTemplate(dataSource());
+    }
     @Value("${3rd-party.order.datasource.url}")
     private String orderDbUrl;
     @Value("${3rd-party.order.datasource.username}")
