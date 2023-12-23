@@ -1,5 +1,6 @@
 package com.example.demo.pay.domain;
 
+import com.example.demo.pay.application.VatCalculator;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,6 +34,14 @@ public class PayInformation {
         this.payerId = payerId;
         this.payAmount = payAmount;
         this.vatAmount = vatAmount;
+        this.payType = payType;
+        this.payStatus = payStatus;
+    }
+
+    public PayInformation(String payerId, Integer payAmount, PayType payType, PayStatus payStatus) {
+        this.payerId = payerId;
+        this.payAmount = payAmount;
+        this.vatAmount = VatCalculator.execute(payAmount);
         this.payType = payType;
         this.payStatus = payStatus;
     }

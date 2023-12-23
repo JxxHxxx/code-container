@@ -19,16 +19,20 @@ import org.springframework.batch.core.scope.context.StepSynchronizationManager;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.ArgumentPreparedStatementSetter;
 
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
-import static com.example.demo.sales.SystemType.BATCH;
+import static org.springframework.boot.jdbc.DatabaseDriver.*;
+import static org.springframework.boot.jdbc.DatabaseDriver.SQLSERVER;
 
 /**
  * 결제 데이터를 합산하여
@@ -46,6 +50,9 @@ public class PaySummaryJob {
     private final SalesSummaryRepository salesSummaryRepository;
     private final PaySummaryItemProcessor paySummaryItemProcessor;
     private final PayRowMapper payRowMapper;
+    private final Environment env;
+
+    private static final String DB_DRIVER_CLASS_NAME_PROPERTY_KEY = "spring.datasource.driver-class-name";
 
     @Bean(name = "pay.summary.job")
     public Job paySummaryJob() throws Exception {
@@ -75,23 +82,33 @@ public class PaySummaryJob {
         Map<String, Object> jobParameters = StepSynchronizationManager.getContext().getJobParameters();
         Object requestDate = jobParameters.get("requestDate");
 
+        String sql = createPayQueryByDbVendor();
+
         return new JdbcCursorItemReaderBuilder<Pay>()
                 .name("paySummaryItemReader")
                 .dataSource(dataSource)
-                .sql(mssql())
+                .sql(sql)
                 .rowMapper(payRowMapper)
                 .preparedStatementSetter(new ArgumentPreparedStatementSetter(new Object[]{requestDate}))
                 .build();
     }
 
-    private static String mysql() {
-        return "SELECT * FROM pay p WHERE created_date = ? order by store_id ";
-    }
+    private String createPayQueryByDbVendor() {
+        String sql  = null;
 
-    private static String mssql() {
-        return "SELECT * FROM pay p with(nolock) WHERE created_date = ? order by store_id ";
-    }
+        if (MYSQL.getDriverClassName().equals(env.getProperty(DB_DRIVER_CLASS_NAME_PROPERTY_KEY))) {
+            sql = "SELECT * FROM pay p WHERE created_date = ? order by store_id ";
+        }
+        if (SQLSERVER.getDriverClassName().equals(env.getProperty(DB_DRIVER_CLASS_NAME_PROPERTY_KEY))) {
+            sql = "SELECT * FROM pay p with(nolock) WHERE created_date = ? order by store_id ";
+        }
 
+        if (Objects.isNull(sql)) {
+            log.info("Driver class is not MYSQL or SQLSERVER");
+            throw new IllegalArgumentException("Driver class is not MYSQL or SQLSERVER");
+        }
+        return sql;
+    }
 
     @Bean
     @StepScope // stepContext 를 이용하려면 필요함

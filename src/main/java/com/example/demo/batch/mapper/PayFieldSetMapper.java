@@ -10,6 +10,12 @@ import org.springframework.validation.BindException;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+/**
+ * rowMapper 에서는 resultSet 에 필드가 DB의 컬럼명을 따라간다.
+ * 반면 FieldSetMapper 에서는 이러한 작업을 하지 않는다. 해당 작업은 앞단의 LineTokenizer 에서 한다.
+ *
+ */
+
 @Component
 public class PayFieldSetMapper implements FieldSetMapper<Pay> {
 

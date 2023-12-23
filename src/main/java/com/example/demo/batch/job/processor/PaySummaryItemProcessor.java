@@ -62,4 +62,8 @@ public class PaySummaryItemProcessor extends ItemStreamSupport implements ItemPr
 
         return pay;
     }
+
+    protected Map<Long, String> getSkippedItems() {
+        return skippedItems;
+    }
 }

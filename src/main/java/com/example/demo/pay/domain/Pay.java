@@ -1,5 +1,6 @@
 package com.example.demo.pay.domain;
 
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -30,6 +31,7 @@ public class Pay {
     @Column(name = "created_time")
     private LocalTime createdTime;
 
+    @Builder
     public Pay(Long id, OrderInformation orderInformation, PayInformation payInformation, LocalDate createdDate, LocalTime createdTime) {
         this(orderInformation, payInformation, createdDate, createdTime);
         this.id = id;

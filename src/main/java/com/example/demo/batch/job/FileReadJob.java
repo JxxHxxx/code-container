@@ -1,6 +1,5 @@
 package com.example.demo.batch.job;
 
-import com.example.demo.batch.mapper.PayFieldSetMapper;
 import com.example.demo.pay.domain.Pay;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +17,7 @@ import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.batch.item.file.transform.FieldSet;
+import org.springframework.batch.item.file.transform.LineTokenizer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,6 +32,7 @@ public class FileReadJob {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final FieldSetMapper payFieldSetMapper;
+    private final LineTokenizer payLineTokenizer;
 
     @Bean(name = "file.read.job")
     public Job fileReadJob() throws IOException {
@@ -46,8 +47,21 @@ public class FileReadJob {
     public Step fileReadStep() throws IOException {
         return stepBuilderFactory.get("file.read.step")
                 .<FieldSet, Pay>chunk(100)
-                .reader(flatFileItemReader(null))
+                .reader(flatFileItemReaderV2(null))
                 .writer(itemWriter())
+                .build();
+    }
+
+    @Bean
+    @StepScope
+    public FlatFileItemReader flatFileItemReaderV2(@Value("#{jobParameters['payFile']}") String inputFileName) throws IOException {
+        return new FlatFileItemReaderBuilder<FieldSet>()
+                .name("fileItemReader")
+                .resource(new ClassPathResource(inputFileName))
+                .linesToSkip(1)
+                .skippedLinesCallback(line -> log.info("skipped line : {}", line))
+                .lineTokenizer(payLineTokenizer)
+                .fieldSetMapper(payFieldSetMapper)
                 .build();
     }
 
