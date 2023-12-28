@@ -96,10 +96,10 @@ public class PaySummaryJob {
     private String createPayQueryByDbVendor() {
         String sql  = null;
 
-        if (MYSQL.getDriverClassName().equals(env.getProperty(DB_DRIVER_CLASS_NAME_PROPERTY_KEY))) {
+        if (isDatabaseDriver(MYSQL) || isDatabaseDriver(H2)) {
             sql = "SELECT * FROM pay p WHERE created_date = ? order by store_id ";
         }
-        if (SQLSERVER.getDriverClassName().equals(env.getProperty(DB_DRIVER_CLASS_NAME_PROPERTY_KEY))) {
+        if (isDatabaseDriver(SQLSERVER)) {
             sql = "SELECT * FROM pay p with(nolock) WHERE created_date = ? order by store_id ";
         }
 
@@ -108,6 +108,10 @@ public class PaySummaryJob {
             throw new IllegalArgumentException("Driver class is not MYSQL or SQLSERVER");
         }
         return sql;
+    }
+
+    private boolean isDatabaseDriver(DatabaseDriver driver) {
+        return driver.getDriverClassName().equals((env.getProperty(DB_DRIVER_CLASS_NAME_PROPERTY_KEY)));
     }
 
     @Bean
