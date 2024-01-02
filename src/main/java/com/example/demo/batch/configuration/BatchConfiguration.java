@@ -2,6 +2,8 @@ package com.example.demo.batch.configuration;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.mybatis.spring.SqlSessionFactoryBean;
 import org.springframework.batch.core.configuration.JobRegistry;
 import org.springframework.batch.core.configuration.support.*;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -10,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import java.util.Collection;
 
 /**
@@ -24,6 +27,13 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class BatchConfiguration {
     private final JobRegistry jobRegistry;
+    private final DataSource dataSource;
+    @Bean
+    public SqlSessionFactory sqlSessionFactory() throws Exception {
+        SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
+        sqlSessionFactoryBean.setDataSource(dataSource);
+        return sqlSessionFactoryBean.getObject();
+    }
 
     @Bean
     public JobRegistryBeanPostProcessor jobRegistryBeanPostProcessor() throws Exception {
