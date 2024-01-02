@@ -1,5 +1,6 @@
 package com.example.demo.admin.infra;
 
+import com.example.demo.admin.dto.response.JobExecutionResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -8,8 +9,10 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
+
+import static com.example.demo.admin.infra.JobExecutionMapper.*;
 
 @Slf4j
 @Repository
@@ -17,26 +20,21 @@ import java.util.Objects;
 public class JobExecutionRepository {
     private final JdbcTemplate jdbcTemplate;
 
-    private static final String JOB_EXECUTIONS_WITH_JOB_NAME_SQL = "SELECT " +
-            "bje.JOB_EXECUTION_ID, " +
-            "bji.JOB_NAME, " +
-            "bje.JOB_INSTANCE_ID, " +
-            "bje.START_TIME, " +
-            "bje.END_TIME, " +
-            "bje.STATUS, " +
-            "bje.EXIT_CODE " +
-            "FROM BATCH_JOB_EXECUTION bje with(nolock) " +
-            "JOIN BATCH_JOB_INSTANCE bji ON bje.JOB_INSTANCE_ID  = bji.JOB_INSTANCE_ID " +
-            "WHERE bje.START_TIME >= ? + ' 00:00:00.000' " +
-            "AND bje.END_TIME <= ? + ' 23:59:59.599'";
+    public List<JobExecutionResponse> findJobExecutionsByDuration(LocalDateTime startDateTime, @Nullable LocalDateTime endDateTime) {
+        BeanPropertyRowMapper<JobExecutionResponse> rowMapper = new BeanPropertyRowMapper<>(JobExecutionResponse.class);
+        return jdbcTemplate.query(JOB_EXECUTIONS_WITH_JOB_NAME_SQL, rowMapper, startDateTime, endDateTime);
+    }
 
+    public List<JobExecutionResponse> findJobExecutionsByExitCode(boolean isSuccessful) {
+        String sql = null;
+        BeanPropertyRowMapper<JobExecutionResponse> rowMapper = new BeanPropertyRowMapper<>(JobExecutionResponse.class);
 
-    public List<CustomJobExecution> getJobExecutionsWithJobNameByStartDate(String start, @Nullable String end) {
-        if (Objects.isNull(end) || end.isEmpty()) {
-            end = start;
+        if (isSuccessful) {
+            return jdbcTemplate.query(SUCCESSFUL_EXECUTIONS_SQL, rowMapper);
         }
 
-        BeanPropertyRowMapper<CustomJobExecution> rowMapper = new BeanPropertyRowMapper<>(CustomJobExecution.class);
-        return jdbcTemplate.query(JOB_EXECUTIONS_WITH_JOB_NAME_SQL, rowMapper, start, end);
+        else  {
+            return jdbcTemplate.query(UN_SUCCESSFUL_JOB_EXECUTIONS_SQL, rowMapper);
+        }
     }
 }

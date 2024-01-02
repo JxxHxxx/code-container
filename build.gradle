@@ -47,6 +47,9 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-quartz'
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // https://mvnrepository.com/artifact/org.mybatis.spring.boot/mybatis-spring-boot-starter
+    implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:2.2.2")
+
     implementation 'org.springframework.boot:spring-boot-starter-integration'
     implementation 'org.springframework.integration:spring-integration-jpa'
 
@@ -54,9 +57,9 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok'
 //    회사에서 ㅎ
-//    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
+    runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
 //     집에서
-    runtimeOnly 'com.mysql:mysql-connector-j'
+//    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
 
     testCompileOnly 'org.projectlombok:lombok'
